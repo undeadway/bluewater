@@ -1,0 +1,41 @@
+{
+  "name": "bluewater",
+  "version": "0.0.3",
+  "discription": "A common interface for adapt databases.",
+  "main": "./src/index.js",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitee.com/undeadway/bluewater.git"
+  },
+  "engines": {
+    "node": "6.10.0"
+  },
+  "dependencies": {
+    "coralian": "0.0.5"
+  },
+  "script": {
+    "build": " test/index.js"
+  },
+  "description": "一个基于 Node.js的数据库接口适配器，与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异",
+  "bugs": {
+    "url": "https://gitee.com/undeadway/bluewater/issues"
+  },
+  "homepage": "http://wpl.waygc.net/prj=bluewater",
+  "directories": {
+    "test": "test"
+  },
+  "keywords": [
+    "bluewater",
+    "js",
+    "database",
+    "adapter",
+    "connection",
+    "driver",
+    "javascript"
+  ],
+  "author": "hzwaygc@Gmail.com",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
