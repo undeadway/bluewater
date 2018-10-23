@@ -1,5 +1,6 @@
 /*
  * 各个数据库驱动适配器的基类
+ * 在这个类的基础上，可以添加属于各个数据库自己独有的特性来供使用
  */
 
 const isArray = Array.isArray;
@@ -111,7 +112,8 @@ module.exports = () => {
 			} else {
 				return [input, []];
 			}
-		}, getRecordsList: (rows) => {
+		},
+		getRecordsList: (rows) => {
 
 			let rs = [];
 			if (rows) {

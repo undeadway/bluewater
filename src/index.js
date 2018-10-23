@@ -144,6 +144,16 @@ function bluewater() {
 			}
 		}
 
+		bluewaterObj[queryName] = async (arg) => {
+
+			try {
+				let result = await iBtObj[queryName](arg);
+				arg.success(result);
+			} finally {
+				await closeConn();
+			}
+		};
+
 		bluewaterObj.transaction = async (queue, fail) => { // 专门用于事务（多条sql有顺序执行执行）
 			try {
 				await conn.begin();
@@ -160,16 +170,6 @@ function bluewater() {
 				Coralian.logger.err("bluewater err:\n" + err.stack);
 				e.code = 500;
 				fail(e);
-			} finally {
-				await closeConn();
-			}
-		};
-
-		bluewaterObj[queryName] = async (arg) => {
-
-			try {
-				let result = await iBtObj[queryName](arg);
-				arg.success(result);
 			} finally {
 				await closeConn();
 			}

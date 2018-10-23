@@ -1,7 +1,7 @@
 # Chinese
-一个基于 Node.js的数据库接口适配器
-与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异
-使用的时候只要 
+一个基于 Node.js的数据库接口适配器。  
+与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异。  
+使用的时候只要：
 
 ```
 let bluewater = require("bluewater");
@@ -48,7 +48,7 @@ db.transaction([...]);
 ```
 
 ### 使用方式
-将`res`文件夹复制到**项目根目录**下，打开`bluewater.json`。
+将`res`文件夹复制到**项目根目录**下，打开`bluewater.json`可以看到以下内容。
 ```
 {
 	"type": "", // 这是数据库类型，写上所要使用的数据库驱动名
@@ -88,7 +88,7 @@ let db = bluewater();
 db.getList({
 	success : [Function],
 	paras : {
-		id : 11111111
+		id : 1234567890
 	}
 });
 ```
@@ -155,7 +155,7 @@ db.getList({
 ```
 
 ## About
-Bluewater is an adapter of db drivers, it is not contains any db driver.
+Bluewater is an adapter of db drivers, it is not contains any db driver.  
 Supported db driver list is :
 
 | Name | URL |

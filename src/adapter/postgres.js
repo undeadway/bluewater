@@ -63,9 +63,6 @@ let db = require("./base")();
 db.connect = connection;
 db.getDBSize = function () {
 
-	var stat = fs.statSync(FILE_NAME);
-
-	return stat.size;
 };
 
 db.getDatabaseInfo = function () {
