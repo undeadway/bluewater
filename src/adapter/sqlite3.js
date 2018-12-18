@@ -19,10 +19,10 @@ var FILE_NAME, BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;",
 var fs = require("fs");
 
 // connection
-function connection(dbFileName) {
+function connection({url}) {
 
-	FILE_NAME = dbFileName;
-	var conn = new Database(dbFileName);
+	FILE_NAME = url;
+	var conn = new Database(url);
 
 	function close() {
 		if (!conn) {

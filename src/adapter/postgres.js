@@ -6,15 +6,16 @@
 const { Client } = require('pg');
 
 // connection
-function connection(dbUrl, dbName, dbUser, dbPasswd, dbPort) {
+function connection({url, name, user, passwd, port}) {
 
 	let client = new Client({
-		user: dbUser,
-		host: dbUrl,
-		database: dbName,
-		password: dbPasswd,
-		port: dbPort
+		user: user,
+		host: url,
+		database: name,
+		password: passwd,
+		port: port
 	});
+	client.connect();
 
 	return {
 		begin: async () => {
@@ -37,7 +38,6 @@ function connection(dbUrl, dbName, dbUser, dbPasswd, dbPort) {
 };
 
 function statement(client, sql) {
-	client.connect();
 
 	function execute(arg) {
 		return new Promise((resolve, reject) => {
