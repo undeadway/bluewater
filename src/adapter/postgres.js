@@ -60,7 +60,9 @@ function statement(client, sql) {
 	}
 }
 
-let db = require("./base")();
+let db = require("./base")((paras) => {
+	return `$${paras.length}`;
+});
 db.connect = connection;
 db.getDBSize = function () {
 

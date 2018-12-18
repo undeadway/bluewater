@@ -7,75 +7,75 @@ const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
 // bluewater 对象区分符号常量
-const PARAS_START = "#[",
-	CDTION_START = "?[",
+const BW_PARAS_START = "#[", BW_CDTION_START = "?[",
 	BLUEWATER_END = "]";
 
-/*
- * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
- * 但 #[] 这种语法数据库是不支持的，
- * 所以这个函数就是将上面那种形式的SQL 编译为数据库所支持的形式
- * 
- * @param sql 待修改的 SQL
- * @param paras 参数集合
- * @returns
- */
-function compireObjectToArrray(sql, paras) {
+module.exports = (getPrepareMark) => {
 
-	if (!paras) return [sql];
-	if (Array.isArray(paras)) {
-		return [sql, paras];
-	}
+	/*
+	 * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
+	 * 但 #[] 这种语法数据库是不支持的，
+	 * 所以这个函数就是将上面那种形式的SQL 编译为数据库所支持的形式
+	 * 
+	 * @param sql 待修改的 SQL
+	 * @param paras 参数集合
+	 * @returns
+	 */
+	function compireObjectToArrray(sql, paras) {
 
-	let para = [];
-	while (String.contains(sql, PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
-		let start = sql.indexOf(PARAS_START) + 2,
-			end = sql.indexOf(BLUEWATER_END);
-		let name = sql.slice(start, end);
-		let value = paras[name];
-		if (value === undefined || value === null) {
-			sqlError("SQL 参数 " + name + " 为 " + value);
+		if (!paras) return [sql];
+		if (Array.isArray(paras)) {
+			return [sql, paras];
 		}
-		// 2 将变量装配到数组中
-		para.push(value);
-		// 3 修改 sql
-		sql = sql.replace(PARAS_START + name + BLUEWATER_END, "?");
-	}
-	return [sql, para]; // 4 返回 SQL
-}
 
-function inputReplace(input, paras, key, argKey, value) {
-
-	let condition = paras[key];
-	if (!!condition && condition()) { // 当有这个判断函数以及这个判断函数的返回值为真
-		input = input.replace(CDTION_START + argKey + BLUEWATER_END, value);
-	} else {
-		input = input.replace(CDTION_START + argKey + BLUEWATER_END, String.BLANK);
-	}
-	return input;
-}
-
-function getRerord(records) {
-	let obj = {};
-	if (records) {
-		Object.forEach(records, function (key, val) {
-			key = key.toLowerCase();
-			if (String.contains(key, UNDERBAR)) {
-				let keyArr = key.split(UNDERBAR);
-				let keyRslt = [keyArr[0]];
-				for (let i = 1, len = keyArr.length; i < len; i++) {
-					keyRslt.push(firstToUpperCase(keyArr[i]));
-				}
-				key = keyRslt.join('');
+		let para = [];
+		while (String.contains(sql, BW_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
+			let start = sql.indexOf(BW_PARAS_START) + 2,
+				end = sql.indexOf(BLUEWATER_END);
+			let name = sql.slice(start, end);
+			let value = paras[name];
+			if (value === undefined || value === null) {
+				sqlError("SQL 参数 " + name + " 为 " + value);
 			}
-			obj[key] = val;
-		});
+			// 2 将变量装配到数组中
+			para.push(value);
+			// 3 修改 sql
+			sql = sql.replace(BW_PARAS_START + name + BLUEWATER_END, getPrepareMark(para));
+		}
+		return [sql, para]; // 4 返回 SQL
 	}
 
-	return obj;
-}
+	function inputReplace(input, paras, key, argKey, value) {
 
-module.exports = () => {
+		let condition = paras[key];
+		if (!!condition && condition()) { // 当有这个判断函数以及这个判断函数的返回值为真
+			input = input.replace(BW_CDTION_START + argKey + BLUEWATER_END, value);
+		} else {
+			input = input.replace(BW_CDTION_START + argKey + BLUEWATER_END, String.BLANK);
+		}
+		return input;
+	}
+
+	function getRerord(records) {
+		let obj = {};
+		if (records) {
+			Object.forEach(records, function (key, val) {
+				key = key.toLowerCase();
+				if (String.contains(key, UNDERBAR)) {
+					let keyArr = key.split(UNDERBAR);
+					let keyRslt = [keyArr[0]];
+					for (let i = 1, len = keyArr.length; i < len; i++) {
+						keyRslt.push(firstToUpperCase(keyArr[i]));
+					}
+					key = keyRslt.join('');
+				}
+				obj[key] = val;
+			});
+		}
+
+		return obj;
+	}
+	
 	return {
 		compire: (input, sqlArgs) => {
 			let paras = sqlArgs.from;

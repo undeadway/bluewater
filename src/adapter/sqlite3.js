@@ -146,7 +146,9 @@ function getRollback(savePoint) {
 	return rollBack;
 }
 
-let db = require("./base")();
+let db = require("./base")(() => {
+	return "?";
+});
 db.connect = connection;
 db.getDBSize = function () {
 

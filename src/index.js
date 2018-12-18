@@ -12,7 +12,7 @@
  * 映射到各个数据库驱动中去，但 如何实现 getList
  * 实际的操作依然还是交给各个数据库驱动自己去实现
  */
-let BLUEWATER_DEFS, DB_URL, DB_USER, DB_NAME, DB_PASSWORD, USE_CACHE, DB_TYPE;
+let BLUEWATER_DEFS, dbConnConfig, useCache, dbType;
 
 // 这个函数预读入数据库的配置信息
 let db = (function (readFileSync) {
@@ -22,12 +22,12 @@ let db = (function (readFileSync) {
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
-	DB_URL = database.url, DB_USER = database.user, DB_NAME = database.name, DB_PASSWORD = database.passwd,
-		DB_PORT = database.port;
-	USE_CACHE = database.cache, DB_TYPE = database.type;
+	useCache = database.cache;
+	dbConnConfig = database.connetion;
+	dbType = database.type;
 
 	// 数据库驱动入口
-	return require("./adapter/" + DB_TYPE);
+	return require("./adapter/" + dbType);
 })(require("fs").readFileSync);
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
@@ -66,7 +66,7 @@ let selectCache = require("./util/select_cache");
  */
 function bluewater() {
 
-	let conn = db.connect(DB_URL, DB_NAME, DB_USER, DB_PASSWORD, DB_PORT);
+	let conn = db.connect(dbConnConfig);
 
 	async function closeConn() {
 		if (conn) {
@@ -109,7 +109,7 @@ function bluewater() {
 			try {
 				if (!stmt) sqlError("无法建立起目标数据库的连接。 ");
 
-				if (USE_CACHE && method === 'select') {
+				if (useCache && method === 'select') {
 					// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
 					let result = selectCache.get(_sql, sqlPara);
 					if (result !== null) {
@@ -122,7 +122,7 @@ function bluewater() {
 
 				let stmtMethod = stmt[method];
 
-				if (!stmtMethod) sqlError(`${DB_TYPE} 暂时不支持所定义的 ${method} 操作： `);
+				if (!stmtMethod) sqlError(`${dbType} 暂时不支持所定义的 ${method} 操作： `);
 
 				// 执行数据库
 				Coralian.logger.log(queryName + " start # " + method);
@@ -134,7 +134,7 @@ function bluewater() {
 					result = db.getRecordsList(result);
 				}
 
-				if (USE_CACHE && method === 'select') { // 把搜索到的结果集放到缓存中
+				if (useCache && method === 'select') { // 把搜索到的结果集放到缓存中
 					selectCache.put(_sql, sqlPara, result, timeout);
 				}
 
