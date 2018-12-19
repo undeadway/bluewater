@@ -75,7 +75,7 @@ function bluewater() {
 		}
 	}
 
-	let bluewaterObj = {}, iBtObj = {};
+	let bwObj = {}, instance = {};
 
 	/*
 	 * 现在所有 sql 都定义在一个大对象下， sql 不多的时候可以这么搞，
@@ -87,7 +87,7 @@ function bluewater() {
 		method = String.trim(method.toLowerCase());
 		timeout = timeout || 0;
 
-		iBtObj[queryName] = async ({ paras }) => {
+		instance[queryName] = async (paras) => {
 
 			if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持${method}。`);
 
@@ -144,25 +144,25 @@ function bluewater() {
 			}
 		}
 
-		bluewaterObj[queryName] = async (arg) => {
+		bwObj[queryName] = async (arg) => {
 
 			try {
-				let result = await iBtObj[queryName](arg);
+				let result = await instance[queryName](arg.condition);
 				arg.success(result);
 			} finally {
 				await closeConn();
 			}
 		};
 
-		bluewaterObj.transaction = async (queue, fail) => { // 专门用于事务（多条sql有顺序执行执行）
+		bwObj.transaction = async (queue, fail) => { // 专门用于事务（多条sql有顺序执行）
 			try {
 				await conn.begin();
-				Array.forEach(queue, async item => {
-					let result = await iBtObj[item.name](item.condition);
+				for (let item of queue) {
+					let result = await instance[item.name](item.condition);
 					if (item.success) {
 						item.success(result);
 					}
-				});
+				}
 				await conn.commit();
 			} catch (e) {
 				await conn.rollback();
@@ -174,9 +174,27 @@ function bluewater() {
 				await closeConn();
 			}
 		};
+
+
+		bwObj.execute = async (queue, success, fail) => { // 专门用于没有更新操作的多条sql有顺序执行
+			try {
+				let result = {};
+				for (let item of queue) {
+					result[item.name] = await instance[item.name](item.condition);
+				}
+				success(result);
+			} catch (e) {
+				Coralian.logger.err(err.message);
+				Coralian.logger.err("bluewater err:\n" + err.stack);
+				e.code = 500;
+				fail(e);
+			} finally {
+				await closeConn();
+			}
+		};
 	});
 
-	return bluewaterObj;
+	return bwObj;
 }
 
 bluewater.getDatabaseInfo = db.getDatabaseInfo;

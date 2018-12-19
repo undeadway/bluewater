@@ -1,6 +1,6 @@
 {
   "name": "bluewater",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "discription": "A common interface for adapt database drivers.",
   "main": "./src/index.js",
   "license": "Apache-2.0",
