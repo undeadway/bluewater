@@ -23,7 +23,7 @@ let db = (function (readFileSync) {
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
 	useCache = database.cache;
-	dbConnConfig = database.connetion;
+	dbConnConfig = database.connection;
 	dbType = database.type;
 
 	// 数据库驱动入口
