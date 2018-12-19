@@ -154,20 +154,21 @@ function bluewater() {
 			}
 		};
 
-		bwObj.transaction = async (queue, fail) => { // 专门用于事务（多条sql有顺序执行）
+		bwObj.transaction = async (queue, success, fail) => { // 专门用于事务（多条sql有顺序执行）
 			try {
 				await conn.begin();
-				for (let item of queue) {
+				while (queue.length > 0) {
+					let item = queue.shift();
 					let result = await instance[item.name](item.condition);
 					if (item.success) {
 						item.success(result);
 					}
 				}
 				await conn.commit();
+				success();
 			} catch (e) {
 				await conn.rollback();
-				Coralian.logger.err(err.message);
-				Coralian.logger.err("bluewater err:\n" + err.stack);
+				Coralian.logger.err(e);
 				e.code = 500;
 				fail(e);
 			} finally {
@@ -179,13 +180,13 @@ function bluewater() {
 		bwObj.execute = async (queue, success, fail) => { // 专门用于没有更新操作的多条sql有顺序执行
 			try {
 				let result = {};
-				for (let item of queue) {
+				while (queue.length > 0) {
+					let item = queue.shift();
 					result[item.name] = await instance[item.name](item.condition);
 				}
 				success(result);
 			} catch (e) {
-				Coralian.logger.err(err.message);
-				Coralian.logger.err("bluewater err:\n" + err.stack);
+				Coralian.logger.err(e);
 				e.code = 500;
 				fail(e);
 			} finally {

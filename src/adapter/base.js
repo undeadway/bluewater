@@ -10,6 +10,10 @@ const UNDERBAR = "_";
 const BW_PARAS_START = "#[", BW_CDTION_START = "?[",
 	BLUEWATER_END = "]";
 
+function sqlError(msg) {
+	throw new Error(msg);
+}
+
 module.exports = (getPrepareMark) => {
 
 	/*
@@ -33,16 +37,35 @@ module.exports = (getPrepareMark) => {
 			let start = sql.indexOf(BW_PARAS_START) + 2,
 				end = sql.indexOf(BLUEWATER_END);
 			let name = sql.slice(start, end);
-			let value = paras[name];
-			if (value === undefined || value === null) {
-				sqlError("SQL 参数 " + name + " 为 " + value);
-			}
+			
 			// 2 将变量装配到数组中
-			para.push(value);
 			// 3 修改 sql
-			sql = sql.replace(BW_PARAS_START + name + BLUEWATER_END, getPrepareMark(para));
+			let tagName = BW_PARAS_START + name + BLUEWATER_END;
+			let value = paras[name];
+			if (typeIs(value, 'array')) {
+				let append = `, ${tagName}`;
+				for (let i = 0, len = value.length - 1; i < len; i++) {
+					let val = value[i];
+					sql = pushSqlValue(para, val, sql, tagName, append);
+				}
+				sql = pushSqlValue(para, Array.last(value), sql, tagName);
+			} else {
+				if (value === undefined || value === null) {
+					sqlError("SQL 参数 " + name + " 为 " + value);
+				}
+				sql = pushSqlValue(para, value, sql, tagName);
+			}
 		}
 		return [sql, para]; // 4 返回 SQL
+	}
+
+	function pushSqlValue(para, value, sql, tagName, append = '') {
+
+		para.push(value);
+		// 3 修改 sql
+		sql = sql.replace(tagName, getPrepareMark(para) + append);
+
+		return sql;
 	}
 
 	function inputReplace(input, paras, key, argKey, value) {
@@ -75,7 +98,7 @@ module.exports = (getPrepareMark) => {
 
 		return obj;
 	}
-	
+
 	return {
 		compire: (input, sqlArgs) => {
 			let paras = sqlArgs.from;

@@ -38,7 +38,7 @@ function connection({url}) {
 		close: close,
 		begin: () => {
 			return new Promise((resolve, reject) => {
-				conn.run(getTransaction(level), (err, rows) => {
+				conn.run(getTransaction(), (err, rows) => {
 					if (err) {
 						reject(err);
 					} else {
@@ -121,12 +121,6 @@ function statement(conn, sql) {
 		update: update,
 		close: close
 	}
-}
-
-function exeStmt(stmt, args, method) {
-	var arg = args.shift();
-	Coralian.logger.log('arg:' + arg);
-	stmt.all(arg, method);
 }
 
 function getTransaction(level) {
