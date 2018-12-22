@@ -32,7 +32,7 @@ function connection({url, name, user, passwd, port}) {
 			return statement(client, sql);
 		},
 		close: () => {
-			client.release();
+			//client.release();
 		}
 	}
 };
