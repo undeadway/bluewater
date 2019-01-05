@@ -9,7 +9,7 @@
     "url": "git+https://gitee.com/undeadway/bluewater.git"
   },
   "engines": {
-    "node": "6.10.0"
+    "node": "8.11.3"
   },
   "dependencies": {
     "coralian": "0.0.10"
