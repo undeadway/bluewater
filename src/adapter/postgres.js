@@ -6,7 +6,7 @@
 const { Client } = require('pg');
 
 // connection
-function connection({url, name, user, passwd, port}) {
+function connection({ url, name, user, passwd, port }) {
 
 	let client = new Client({
 		user: user,
@@ -15,7 +15,6 @@ function connection({url, name, user, passwd, port}) {
 		password: passwd,
 		port: port
 	});
-	client.connect();
 
 	return {
 		begin: async () => {
@@ -39,16 +38,8 @@ function connection({url, name, user, passwd, port}) {
 
 function statement(client, sql) {
 
-	function execute(arg) {
-		return new Promise((resolve, reject) => {
-			client.query(sql, arg, (err, ret) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve(ret.rows);
-			})
-		});
+	async function execute(arg) {
+		return await client.query(sql, arg);
 	}
 
 	return {
@@ -62,6 +53,8 @@ function statement(client, sql) {
 
 let db = require("./base")((paras) => {
 	return `$${paras.length}`;
+}, () => {
+	return new RegExp("$[d]+");
 });
 db.connect = connection;
 db.getDBSize = function () {

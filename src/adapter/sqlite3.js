@@ -19,7 +19,7 @@ var FILE_NAME, BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;",
 var fs = require("fs");
 
 // connection
-function connection({url}) {
+function connection({ url }) {
 
 	FILE_NAME = url;
 	var conn = new Database(url);
@@ -140,9 +140,11 @@ function getRollback(savePoint) {
 	return rollBack;
 }
 
-let db = require("./base")(() => {
+function prepareMark() {
 	return "?";
-});
+}
+
+let db = require("./base")(prepareMark, prepareMark);
 db.connect = connection;
 db.getDBSize = function () {
 

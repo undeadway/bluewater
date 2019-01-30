@@ -12,6 +12,12 @@
  * 映射到各个数据库驱动中去，但 如何实现 getList
  * 实际的操作依然还是交给各个数据库驱动自己去实现
  */
+
+/*
+* 现在所有 sql 都定义在一个大对象下， sql 不多的时候可以这么搞，
+* 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
+* 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
+*/
 let BLUEWATER_DEFS, dbConnConfig, useCache, dbType;
 
 // 这个函数预读入数据库的配置信息
@@ -42,7 +48,66 @@ function sqlError(msg) {
 	throw new Error(msg || "SQL 错误");
 }
 
-let selectCache = require("./util/select_cache");
+async function queryFunction(queryName, paras, conn) {
+
+	let { method, sql, timeout, condition } = BLUEWATER_DEFS[queryName];
+
+	method = String.trim(method.toLowerCase());
+	timeout = timeout || 0;
+
+	if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持${method}。`);
+
+	let sqlArgs = {
+		from: paras,
+		condition: condition
+	};
+
+	let [_sql, sqlPara] = db.compire(sql, sqlArgs);
+	let stmt = conn.prepare(_sql); // 实例化 stmt 并获得执行方法
+
+	async function closeStmt() {
+		if (stmt) {
+			await stmt.close();
+			stmt = null;
+		}
+	}
+
+	try {
+		if (!stmt) sqlError("无法建立起目标数据库的连接。 ");
+		if (useCache && method === 'select') {
+			// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
+			let result = db.getCache(_sql, sqlPara);
+			if (result !== null) {
+				Coralian.logger.log(queryName + " data get from cache.");
+				return result;
+			}
+		} else {
+			db.clearCache(); // 非 select 或 不使用 cache 操作的时候，清空缓存
+		}
+
+		let stmtMethod = stmt[method];
+
+		if (!stmtMethod) sqlError(`${dbType} 暂时不支持所定义的 ${method} 操作： `);
+
+		// 执行数据库
+		Coralian.logger.log(queryName + " start # " + method);
+		Coralian.logger.log(_sql);
+		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
+
+		let result = await stmtMethod(sqlPara);
+		if (method === 'select') {
+			result = db.getRecordsList(result);
+		}
+
+		if (useCache && method === 'select') { // 把搜索到的结果集放到缓存中
+			db.putCache(_sql, sqlPara, result, timeout);
+		}
+
+		return result;
+	} finally {
+		await closeStmt();
+	}
+}
 
 /*
  * 主函数
@@ -75,127 +140,54 @@ function bluewater() {
 		}
 	}
 
-	let bwObj = {}, instance = {};
-
-	/*
-	 * 现在所有 sql 都定义在一个大对象下， sql 不多的时候可以这么搞，
-	 * 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
-	 * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
-	 */
-	Object.forEach(BLUEWATER_DEFS, (queryName, { method, sql, timeout, condition }) => {
-
-		method = String.trim(method.toLowerCase());
-		timeout = timeout || 0;
-
-		instance[queryName] = async (paras) => {
-
-			if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持${method}。`);
-
-			let sqlArgs = {
-				from: paras,
-				condition: condition
-			};
-
-			let [_sql, sqlPara] = db.compire(sql, sqlArgs);
-			let stmt = conn.prepare(_sql); // 实例化 stmt 并获得执行方法
-
-			async function closeStmt() {
-				if (stmt) {
-					await stmt.close();
-					stmt = null;
-				}
-			}
-
+	return {
+		// 执行单条sql
+		query: async (arg) => {
 			try {
-				if (!stmt) sqlError("无法建立起目标数据库的连接。 ");
-
-				if (useCache && method === 'select') {
-					// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
-					let result = selectCache.get(_sql, sqlPara);
-					if (result !== null) {
-						Coralian.logger.log(queryName + " data get from cache.");
-						return result;
-					}
-				} else {
-					selectCache.clear(); // 非 select 或 不使用 cache 操作的时候，清空缓存
-				}
-
-				let stmtMethod = stmt[method];
-
-				if (!stmtMethod) sqlError(`${dbType} 暂时不支持所定义的 ${method} 操作： `);
-
-				// 执行数据库
-				Coralian.logger.log(queryName + " start # " + method);
-				Coralian.logger.log(_sql);
-				Coralian.logger.log("args : " + JSON.stringify(sqlPara));
-
-				let result = await stmtMethod(sqlPara);
-				if (method === 'select') {
-					result = db.getRecordsList(result);
-				}
-
-				if (useCache && method === 'select') { // 把搜索到的结果集放到缓存中
-					selectCache.put(_sql, sqlPara, result, timeout);
-				}
-
-				return result;
-			} finally {
-				await closeStmt();
-			}
-		}
-
-		bwObj[queryName] = async (arg) => {
-
-			try {
-				let result = await instance[queryName](arg.condition);
+				let result = queryFunction(arg.name, arg.condition, conn);
 				arg.success(result);
 			} finally {
 				await closeConn();
 			}
-		};
-
-		bwObj.transaction = async (queue, success, fail) => { // 专门用于事务（多条sql有顺序执行）
+		},
+		// 专门用于事务（多条sql的有序执行）
+		transaction: async (queue, success, failed) => {
 			try {
 				await conn.begin();
-				while (queue.length > 0) {
-					let item = queue.shift();
-					let result = await instance[item.name](item.condition);
+				while ((item = queue.shift()) != undefined) {
+					let result = await queryFunction(item.name, item.condition, conn);
 					if (item.success) {
 						item.success(result);
 					}
 				}
 				await conn.commit();
-				success();
+				if (success) success();
 			} catch (e) {
 				await conn.rollback();
 				Coralian.logger.err(e);
 				e.code = 500;
-				fail(e);
+				if (failed) failed(e);
 			} finally {
 				await closeConn();
 			}
-		};
-
-
-		bwObj.execute = async (queue, success, fail) => { // 专门用于没有更新操作的多条sql有顺序执行
+		},
+		// 专门用于无需开启事物且无中间操作的多条sql的 有序执行
+		execute: async (queue, success, failed) => {
 			try {
 				let result = {};
-				while (queue.length > 0) {
-					let item = queue.shift();
-					result[item.name] = await instance[item.name](item.condition);
+				while ((item = queue.shift()) != undefined) {
+					result[item.name] = await queryFunction(item.name, item.condition, conn);
 				}
-				success(result);
+				if (success) success(result);
 			} catch (e) {
 				Coralian.logger.err(e);
 				e.code = 500;
-				fail(e);
+				if (failed) failed(e);
 			} finally {
 				await closeConn();
 			}
-		};
-	});
-
-	return bwObj;
+		}
+	};
 }
 
 bluewater.getDatabaseInfo = db.getDatabaseInfo;
