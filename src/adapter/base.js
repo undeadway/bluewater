@@ -14,7 +14,9 @@ function sqlError(msg) {
 	throw new Error(msg);
 }
 
-module.exports = (getPrepareMark) => {
+const cache = require("./../util/select_cache");
+
+module.exports = (getPrepareMark, initPrepareMark) => {
 
 	/*
 	 * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
@@ -37,7 +39,7 @@ module.exports = (getPrepareMark) => {
 			let start = sql.indexOf(BW_PARAS_START) + 2,
 				end = sql.indexOf(BLUEWATER_END);
 			let name = sql.slice(start, end);
-			
+
 			// 2 将变量装配到数组中
 			// 3 修改 sql
 			let tagName = BW_PARAS_START + name + BLUEWATER_END;
@@ -150,6 +152,21 @@ module.exports = (getPrepareMark) => {
 			}
 
 			return rs;
+		},
+		putCache: (sql, para, expire = 0) => {
+			cache.put(sql, para, expire, initPrepareMark);
+		},
+		getCache: (sql, para) => {
+			return cache.get(sql, para, initPrepareMark);
+		},
+		clearCache: () => {
+			cache.clear();
+		},
+		removeCache: (sql, para) => {
+			cache.remove(sql, para, initPrepareMark);
+		},
+		hasCache : (sql, para) => {
+			cache.has(sql, para, initPrepareMark);
 		}
 	};
 };

@@ -3,23 +3,23 @@
  */
 var map = new Map();
 
-this.put = function(sql, param, obj, timeout) {
+this.put = function (sql, param, obj, timeout, initPrepareMark) {
 
-	if(timeout === 0) return; // 如果缓存时间为0则不添加到缓存
+	if (timeout === 0) return; // 如果缓存时间为0则不添加到缓存
 
-	map.set(createKey(sql, param), { value: obj, count: 0, timeout: timeout * 60 * 1000, created: Date.now() });
+	map.set(createKey(sql, param, initPrepareMark), { value: obj, count: 0, timeout: timeout * 1000, created: Date.now() });
 }
 
-this.get = function(sql, param) {
+this.get = function (sql, param, initPrepareMark) {
 
-	var result = map.get(createKey(sql, param));
+	var result = map.get(createKey(sql, param, initPrepareMark));
 
-	if(!result) return null;
-	if(isTimeout(result)) return null;
+	if (!result) return null;
+	if (isTimeout(result)) return null;
 
 	var value = result.value;
 
-	if(!!value) {
+	if (!!value) {
 		result.count++; // TODO 这里是用来判断热门程度的，暂时没啥用
 		return value;
 	} else {
@@ -27,39 +27,39 @@ this.get = function(sql, param) {
 	}
 }
 
-this.has = function(sql, param) {
+this.has = function (sql, param, initPrepareMark) {
 
-	var result = map.has(createKey(sql, param));
-	if(result === null || result === undefined) return false;
-	if(isTimeout(result)) return false;
+	var result = map.has(createKey(sql, param, initPrepareMark));
+	if (result === null || result === undefined) return false;
+	if (isTimeout(result)) return false;
 
 	return true;
 }
 
 
-this.clear = function() {
+this.clear = function () {
 	return map.clear();
 }
-this.size = function() {
+this.size = function () {
 	return map.size;
 }
 
-this.remove = function(sql, param) {
+this.remove = function (sql, param, initPrepareMark) {
 
-	return map.remove(createKey(sql, param));
+	return map.remove(createKey(sql, param, initPrepareMark));
 }
 
-function createKey(sql, param) {
+function createKey(sql, param, initPrepareMark) {
 
-	if(!param || param.length === 0) return sql;
+	if (!param || param.length === 0) return sql;
 
 	paras = param.slice();
 
-	while(String.contains(sql, "?")) {
-		if(paras.length === 0) throw new Error(sql);
-		sql = sql.replace("?", paras.shift());
+	while (String.contains(sql, initPrepareMark)) {
+		if (paras.length === 0) throw new Error(sql);
+		sql = sql.replace(initPrepareMark(), paras.shift());
 	}
-	if(paras.length !== 0) throw new Error(paras);
+	if (paras.length !== 0) throw new Error(paras);
 
 	return sql;
 }
@@ -75,15 +75,15 @@ function readFromFile() {
 function key(sql, param) {
 
 	return {
-		getSql: function() {
+		getSql: function () {
 			return sql;
 		},
-		getParameters: function() {
+		getParameters: function () {
 			return param.clone();
 		},
-		equals: function(another) {
+		equals: function (another) {
 
-			return(sql === another.getSql() && Object.equals(param, another.getParameters()));
+			return (sql === another.getSql() && Object.equals(param, another.getParameters()));
 		}
 	}
 }
@@ -91,9 +91,9 @@ function key(sql, param) {
 function isTimeout(obj) {
 
 	// timeout 为 0
-	if(obj.timeout === 0) return true;
+	if (obj.timeout === 0) return true;
 	// 创建到现在已经超过timeoue 的保质期
-	if(obj.timeout + obj.created < Date.now()) return true;
+	if (obj.timeout + obj.created < Date.now()) return true;
 
 	return false;
 }
