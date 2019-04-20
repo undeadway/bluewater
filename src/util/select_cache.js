@@ -51,13 +51,14 @@ this.remove = function (sql, param, initPrepareMark) {
 
 function createKey(sql, param, initPrepareMark) {
 
+	let _initPrepareMark = typeIs(initPrepareMark, 'function') ? initPrepareMark() : initPrepareMark;
 	if (!param || param.length === 0) return sql;
 
 	paras = param.slice();
 
-	while (String.contains(sql, initPrepareMark)) {
+	while (String.contains(sql, _initPrepareMark)) {
 		if (paras.length === 0) throw new Error(sql);
-		sql = sql.replace(initPrepareMark(), paras.shift());
+		sql = sql.replace(_initPrepareMark, paras.shift());
 	}
 	if (paras.length !== 0) throw new Error(paras);
 

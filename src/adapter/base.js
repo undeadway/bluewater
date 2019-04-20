@@ -153,8 +153,8 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 
 			return rs;
 		},
-		putCache: (sql, para, expire = 0) => {
-			cache.put(sql, para, expire, initPrepareMark);
+		putCache: (sql, para, obj, expire = 0) => {
+			cache.put(sql, para, obj, expire, initPrepareMark);
 		},
 		getCache: (sql, para) => {
 			return cache.get(sql, para, initPrepareMark);

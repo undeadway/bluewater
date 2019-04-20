@@ -18,7 +18,7 @@
 * 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
 * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
 */
-let BLUEWATER_DEFS, dbConnConfig, useCache, dbType;
+let BLUEWATER_DEFS, dbConnConfig, useCache, dbName, methodQuery;
 
 // 这个函数预读入数据库的配置信息
 let db = (function (readFileSync) {
@@ -30,10 +30,11 @@ let db = (function (readFileSync) {
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
 	useCache = database.cache;
 	dbConnConfig = database.connection;
-	dbType = database.type;
+	dbName = database["database-name"];
+	methodQuery = database["method-query"];
 
 	// 数据库驱动入口
-	return require("./adapter/" + dbType);
+	return require("./adapter/" + dbName);
 })(require("fs").readFileSync);
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
@@ -87,7 +88,7 @@ async function queryFunction(queryName, paras, conn) {
 
 		let stmtMethod = stmt[method];
 
-		if (!stmtMethod) sqlError(`${dbType} 暂时不支持所定义的 ${method} 操作： `);
+		if (!stmtMethod) sqlError(`${dbName} 暂时不支持所定义的 ${method} 操作： `);
 
 		// 执行数据库
 		Coralian.logger.log(queryName + " start # " + method);
@@ -140,15 +141,24 @@ function bluewater() {
 		}
 	}
 
-	return {
+	async function runQueryFunction(queryName, arg) {
+		try {
+			let result = await queryFunction(queryName, arg.condition, conn);
+			arg.success(result);
+		} catch (e) {
+			Coralian.logger.err(e);
+			if (arg.failed) {
+				arg.fail();	
+			}
+		} finally {
+			await closeConn();
+		}
+	}
+
+	let bwObj = {
 		// 执行单条sql
 		query: async (arg) => {
-			try {
-				let result = queryFunction(arg.name, arg.condition, conn);
-				arg.success(result);
-			} finally {
-				await closeConn();
-			}
+			await runQueryFunction(arg.name, arg);
 		},
 		// 专门用于事务（多条sql的有序执行）
 		transaction: async (queue, success, failed) => {
@@ -188,6 +198,17 @@ function bluewater() {
 			}
 		}
 	};
+
+	if (methodQuery === 'ON') {
+		for (let queryName in BLUEWATER_DEFS) {
+	
+			bwObj[queryName] = async (arg) => {
+				await runQueryFunction(queryName, arg);
+			};
+		}
+	}
+
+	return bwObj;
 }
 
 bluewater.getDatabaseInfo = db.getDatabaseInfo;
