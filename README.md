@@ -64,14 +64,14 @@ db.transaction([...]);
 }
 ```
 
-按照以上信息配置`bluewater.json`，如果使用 sqlite3 这样的文件数据库，除了`type`，`url`、`name`、`user`、`passwd`、`port`均可留空。
+按照以上信息配置`bluewater.json`，需要按安丘配置数据库类型（database-name）、连接信息等。
 
-在使用时， 通过
+在使用时， 通过使用：
 ```
 let db = bluewater();
 ```
-来创建实例，外部调用不用知道内部逻辑，全部交给各个数据库的驱动自己来实现。  
-在实例创建之后，只要通过 其实例调用在 sql.json 中定义好的方法就可以了。
+来创建`bluewater`的实例，外部调用不用知道内部逻辑，全部交给各个数据库的驱动自己来实现。  
+在实例创建之后，只要通过 其实例调用在`sql.json`中定义好的方法就可以了。
 
 ### sql.json
 在`bluewater.json`的同目录下建立一个`sql.json`的文件，用于记录所有的sql。
@@ -89,7 +89,7 @@ let db = bluewater();
 在外部使用的时候只要
 ```
 db.query({
-	"name": "getList",
+	name: "getList",
 	success : [Function],
 	paras : {
 		id : 1234567890
@@ -138,6 +138,8 @@ db.getList({
 		id : 1234567890
 	}
 });
+```
+**方法式调用不默认开启，必须将`bluewater.json`中的`method-query`配置为`ON`才能使用**。
 
 #### 参数中带参
 执行插入语句的时候，因为肯能会带参，出现类似下面的sql：
