@@ -51,13 +51,16 @@ db.transaction([...]);
 将`res`文件夹复制到**项目根目录**下，打开`bluewater.json`可以看到以下内容。
 ```
 {
-	"type": "", // 这是数据库类型，写上所要使用的数据库驱动名
-	"url": "", // 数据库的链接
-	"name": "", // 数据库名
-	"user": "", // 数据库用户名
-	"passwd": "", // 数据库用户密码
+	"database-name": "", // 这是数据库类型，写上所要使用的数据库驱动名
+	"connection": {
+		"url": "", // 数据库的链接
+		"name": "", // 数据库名
+		"user": "", // 数据库用户名
+		"passwd": "", // 数据库用户密码
+	},
 	"port" : "", // 数据库端口
-	"cache": true // 是否使用缓存
+	"cache": true, // 是否使用缓存
+	"method-query":"ON" // 是否启动方法式调用
 }
 ```
 
@@ -73,7 +76,7 @@ let db = bluewater();
 ### sql.json
 在`bluewater.json`的同目录下建立一个`sql.json`的文件，用于记录所有的sql。
 
-#### 基本格式
+#### 调用格式
 ```
 {
 	"getList" : {
@@ -85,7 +88,8 @@ let db = bluewater();
 
 在外部使用的时候只要
 ```
-db.getList({
+db.query({
+	"name": "getList",
 	success : [Function],
 	paras : {
 		id : 1234567890
@@ -113,6 +117,27 @@ SELECT * FROM NOTICE ?[inTime] ?[outTime]
 	}
 }
 ```
+
+### 方法式调用
+如果`bluewater.json`中的`method-query`配置为`ON`，就可以使用方法式调用。  
+一般情况下，SQL的调用是用
+```
+db.query({
+	"name": "getList",
+	success : [Function],
+	paras : {
+		id : 1234567890
+	}
+});
+```
+这种方法来写的，如果开启了方法式调用，则能通过下面这种方法来写代码。
+```
+db.getList({
+	success : [Function],
+	paras : {
+		id : 1234567890
+	}
+});
 
 #### 参数中带参
 执行插入语句的时候，因为肯能会带参，出现类似下面的sql：

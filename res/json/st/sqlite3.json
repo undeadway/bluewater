@@ -1,9 +1,11 @@
 {
-	"type": "sqlite3",
-	"url": "./db/sqlite3.db",
-	"name": "",
-	"user": "",
-	"passwd": "",
-	"port" : "",
+	"database-name": "sqlite3",
+	"connection": {
+		"url": "../db/sqlite3.db",
+		"name": "",
+		"user": "",
+		"passwd": ""
+	},
+	"method-query":"ON",
 	"cache": true
 }
