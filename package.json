@@ -1,6 +1,6 @@
 {
   "name": "bluewater",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "discription": "A common interface for adapt drivers of database.",
   "main": "./src/index.js",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     "node": "8.11.3"
   },
   "dependencies": {
-    "coralian": "0.0.13"
+    "coralian": "0.0.14"
   },
   "script": {
     "build": " test/index.js"
