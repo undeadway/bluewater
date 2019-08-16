@@ -148,7 +148,7 @@ function bluewater() {
 		} catch (e) {
 			Coralian.logger.err(e);
 			if (arg.failed) {
-				arg.fail();	
+				arg.fail();
 			}
 		} finally {
 			await closeConn();
@@ -168,7 +168,18 @@ function bluewater() {
 				while ((item = queue.shift()) != undefined) {
 					let result = await queryFunction(item.name, item.condition, conn);
 					if (item.success) {
-						results[item.name] = result;
+						let ret = results[item.name];
+						if (!ret) {
+							results[item.name] = result;
+						} else {
+							if (typeIs(ret, 'array')) {
+								results[item.name] = ret.concat(result);
+							} else {
+								results[item.name] = [ret];
+								results[item.name].push(result);
+							}
+						
+						}
 						item.success(result);
 					}
 				}
@@ -186,11 +197,23 @@ function bluewater() {
 		// 专门用于无需开启事物且无中间操作的多条sql的 有序执行
 		execute: async (queue, success, failed) => {
 			try {
-				let result = {};
+				let results = {};
 				while ((item = queue.shift()) != undefined) {
-					result[item.name] = await queryFunction(item.name, item.condition, conn);
+					let result = await queryFunction(item.name, item.condition, conn);
+					let ret = results[item.name];
+					if (!ret) {
+						results[item.name] = result;
+					} else {
+						if (typeIs(ret, 'array')) {
+							results[item.name] = ret.concat(result);
+						} else {
+							results[item.name] = [ret];
+							results[item.name].push(result);
+						}
+					
+					}
 				}
-				if (success) success(result);
+				if (success) success(results);
 			} catch (e) {
 				Coralian.logger.err(e);
 				e.code = 500;
@@ -203,7 +226,7 @@ function bluewater() {
 
 	if (methodQuery === 'ON') {
 		for (let queryName in BLUEWATER_DEFS) {
-	
+
 			bwObj[queryName] = async (arg) => {
 				await runQueryFunction(queryName, arg);
 			};
