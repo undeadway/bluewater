@@ -1,6 +1,6 @@
 {
   "name": "bluewater",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "discription": "A common interface for adapt drivers of database.",
   "main": "./src/index.js",
   "license": "Apache-2.0",
@@ -12,7 +12,7 @@
     "node": "8.11.3"
   },
   "dependencies": {
-    "coralian": "0.0.14"
+    "coralian": "0.0.18"
   },
   "script": {
     "build": " test/index.js"
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://gitee.com/undeadway/bluewater/issues"
   },
-  "homepage": "http://wpl.waygc.net/prj=bluewater",
+  "homepage": "http://codes.waygc.net/project/?bluewater",
   "directories": {
     "test": "test"
   },
