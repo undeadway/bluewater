@@ -12,7 +12,7 @@
     "node": "8.11.3"
   },
   "dependencies": {
-    "coralian": "0.0.18"
+    "coralian": "0.0.19"
   },
   "script": {
     "build": " test/index.js"

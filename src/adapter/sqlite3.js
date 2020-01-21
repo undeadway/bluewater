@@ -8,21 +8,19 @@
  * 要直接用 getList，就得通过 bluewater 才能实现
  * 而不是直接调用这里的 connection 中定义好的方法来执行了
  */
-var Database = require("sqlite3").verbose().Database;
-var slice = Array.prototype.slice,
-	isArray = Array.isArray;
-var FILE_NAME, BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;",
+const Database = require("sqlite3").verbose().Database;
+const FILE_NAME, BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;",
 	ROLLBACK = " ROLLBACK ",
 	COMMIT = "COMMIT;",
 	DEFAULT_LEVEL = "IMMEDIATE",
 	VACUUM = "VACCUM;";
-var fs = require("fs");
+const fs = require("fs");
 
 // connection
 function connection({ url }) {
 
 	FILE_NAME = url;
-	var conn = new Database(url);
+	let conn = new Database(url);
 
 	function close() {
 		if (!conn) {
@@ -131,7 +129,7 @@ function getTransaction(level) {
 
 function getRollback(savePoint) {
 
-	var rollBack = ROLLBACK;
+	let rollBack = ROLLBACK;
 	if (savePoint) {
 		rollBack += savePoint;
 	}
@@ -148,7 +146,7 @@ let db = require("./base")(prepareMark, prepareMark);
 db.connect = connection;
 db.getDBSize = function () {
 
-	var stat = fs.statSync(FILE_NAME);
+	let stat = fs.statSync(FILE_NAME);
 
 	return stat.size;
 };
