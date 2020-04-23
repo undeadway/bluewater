@@ -7,8 +7,7 @@ const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
 // bluewater 对象区分符号常量
-const BW_PARAS_START = "#[", BW_CDTION_START = "?[",
-	BLUEWATER_END = "]";
+const BW_PARAS_START = "#[", BW_CDTION_START = "?[", BLUEWATER_END = "]";
 
 function sqlError(msg) {
 	throw new Error(msg);
