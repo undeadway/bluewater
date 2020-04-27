@@ -10,7 +10,7 @@
  */
 const Database = require("sqlite3").verbose().Database;
 const slice = Array.prototype.slice, isArray = Array.isArray;
-const BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;", 
+const BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;";
 const ROLLBACK = " ROLLBACK ", COMMIT = "COMMIT;", DEFAULT_LEVEL = "IMMEDIATE", VACUUM = "VACCUM;";
 const fs = require("fs");
 let fileName = null; // 这里要赋值，所以不能用 const 定义
