@@ -9,17 +9,16 @@
  * 而不是直接调用这里的 connection 中定义好的方法来执行了
  */
 const Database = require("sqlite3").verbose().Database;
-const FILE_NAME, BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;",
-	ROLLBACK = " ROLLBACK ",
-	COMMIT = "COMMIT;",
-	DEFAULT_LEVEL = "IMMEDIATE",
-	VACUUM = "VACCUM;";
+const slice = Array.prototype.slice, isArray = Array.isArray;
+const BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;";
+const ROLLBACK = " ROLLBACK ", COMMIT = "COMMIT;", DEFAULT_LEVEL = "IMMEDIATE", VACUUM = "VACCUM;";
 const fs = require("fs");
+let fileName = null; // 这里要赋值，所以不能用 const 定义
 
 // connection
 function connection({ url }) {
 
-	FILE_NAME = url;
+	fileName = url;
 	let conn = new Database(url);
 
 	function close() {
@@ -146,7 +145,7 @@ let db = require("./base")(prepareMark, prepareMark);
 db.connect = connection;
 db.getDBSize = function () {
 
-	let stat = fs.statSync(FILE_NAME);
+	let stat = fs.statSync(fileName);
 
 	return stat.size;
 };

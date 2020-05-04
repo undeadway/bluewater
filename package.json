@@ -1,15 +1,12 @@
 {
   "name": "bluewater",
-  "version": "0.0.19",
+  "version": "0.0.23",
   "discription": "A common interface for adapt drivers of database.",
   "main": "./src/index.js",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://gitee.com/undeadway/bluewater.git"
-  },
-  "engines": {
-    "node": "8.11.3"
   },
   "dependencies": {
     "coralian": "0.0.19"
