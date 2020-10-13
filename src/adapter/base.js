@@ -13,7 +13,7 @@ function sqlError(msg) {
 	throw new Error(msg);
 }
 
-const cache = require("./../util/select_cache");
+const cache = require("./../util/select-cache");
 
 module.exports = (getPrepareMark, initPrepareMark) => {
 
