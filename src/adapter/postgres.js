@@ -8,12 +8,12 @@ const pg = require("pg");
 // connection
 function connection({ type, url, name, user, passwd, port }) {
 
-	let client = new pg[type]({
-		user: user,
-		host: url,
-		database: name,
-		password: passwd,
-		port: port
+	const client = new pg[type]({
+		user     : user,
+		host     : url,
+		database : name,
+		password : passwd,
+		port     : port
 	});
 
 	return {

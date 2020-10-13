@@ -11,6 +11,11 @@
   "dependencies": {
     "coralian": "0.0.21"
   },
+  "devDependencies": {
+    "mysql": "^2.18.1",
+    "pg": "2.6.1",
+    "sqlite3": "5.0.0"
+  },
   "script": {
     "build": " test/index.js"
   },
