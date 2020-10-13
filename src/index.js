@@ -56,7 +56,7 @@ async function queryFunction(queryName, paras, conn) {
 	method = String.trim(method.toLowerCase());
 	timeout = timeout || 0;
 
-	if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持${method}。`);
+	if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持 ${method} 。`);
 
 	let sqlArgs = {
 		from: paras,
@@ -79,7 +79,7 @@ async function queryFunction(queryName, paras, conn) {
 			// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
 			let result = db.getCache(_sql, sqlPara);
 			if (result !== null) {
-				Coralian.logger.log(queryName + " data get from cache.");
+				Coralian.logger.log(`${queryName} data get from cache.`);
 				return result;
 			}
 		} else {
@@ -91,7 +91,7 @@ async function queryFunction(queryName, paras, conn) {
 		if (!stmtMethod) sqlError(`${dbName} 暂时不支持所定义的 ${method} 操作： `);
 
 		// 执行数据库
-		Coralian.logger.log(queryName + " start # " + method);
+		Coralian.logger.log(`${queryName} start # ${method}`);
 		Coralian.logger.log(_sql);
 		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
 
