@@ -13,7 +13,7 @@ function sqlError(msg) {
 	throw new Error(msg);
 }
 
-const cache = require("./../util/select-cache");
+const selectCache = require("./../util/select-cache");
 
 module.exports = (getPrepareMark, initPrepareMark) => {
 
@@ -153,19 +153,19 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 			return rs;
 		},
 		putCache: (sql, para, obj, expire = 0) => {
-			cache.put(sql, para, obj, expire, initPrepareMark);
+			selectCache.put(sql, para, obj, expire, initPrepareMark);
 		},
 		getCache: (sql, para) => {
-			return cache.get(sql, para, initPrepareMark);
+			return selectCache.get(sql, para, initPrepareMark);
 		},
 		clearCache: () => {
-			cache.clear();
+			selectCache.clear();
 		},
 		removeCache: (sql, para) => {
-			cache.remove(sql, para, initPrepareMark);
+			selectCache.remove(sql, para, initPrepareMark);
 		},
 		hasCache : (sql, para) => {
-			cache.has(sql, para, initPrepareMark);
+			selectCache.has(sql, para, initPrepareMark);
 		}
 	};
 };
