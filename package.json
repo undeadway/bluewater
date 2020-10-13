@@ -9,7 +9,7 @@
     "url": "git+https://gitee.com/undeadway/bluewater.git"
   },
   "dependencies": {
-    "coralian": "0.0.19"
+    "coralian": "0.0.21"
   },
   "script": {
     "build": " test/index.js"
