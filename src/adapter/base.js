@@ -41,9 +41,9 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 
 			// 2 将变量装配到数组中
 			// 3 修改 sql
-			let tagName = BW_PARAS_START + name + BLUEWATER_END;
+			let tagName = `${BW_PARAS_START}${name}${BLUEWATER_END}`;
 			let value = paras[name];
-			if (typeIs(value, 'array')) {
+			if (typeIs(value, "array")) {
 				let append = `, ${tagName}`;
 				for (let i = 0, len = value.length - 1; i < len; i++) {
 					let val = value[i];
@@ -60,7 +60,7 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 		return [sql, para]; // 4 返回 SQL
 	}
 
-	function pushSqlValue(para, value, sql, tagName, append = '') {
+	function pushSqlValue(para, value, sql, tagName, append = String.BLANK) {
 
 		para.push(value);
 		// 3 修改 sql
@@ -91,7 +91,7 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 					for (let i = 1, len = keyArr.length; i < len; i++) {
 						keyRslt.push(firstToUpperCase(keyArr[i]));
 					}
-					key = keyRslt.join('');
+					key = keyRslt.join(String.BLANK);
 				}
 				obj[key] = val;
 			});
@@ -108,18 +108,18 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 				if (conditions) {
 					Object.forEach(conditions, (key, value) => {
 						switch (typeOf(value)) {
-							case 'string':
+							case "string":
 								input = inputReplace(input, paras, key, key, value);
 								break;
-							case 'array':
-							case 'object':
+							case "array":
+							case "object":
 								/*
 								 * 参数主要用在 INSERT 语句中，某些字段是可以为 null 的时候，如：
 								 * INSER INTO TABLE(PK_COLUMN ?[hasColumn(name)]) VALUES(123 ?[hasColumn(value)])
 								 * 这样在 sql 的 condition 配置中只要写
 								 * "hasColumn" ： {
-								 *     "name" : ', COLUMN_NAME',
-								 *     "value" : ', #[column]'
+								 *     "name" : ", COLUMN_NAME",
+								 *     "value" : ", #[column]"
 								 * }
 								 * 就可以，而不用分别写 hasColumnName 和 hasColumnValue 两个配置了
 								 * 而前端程序的 condition 中也同样只要实现一个 hasColumn 就可以了，更符合逻辑一些

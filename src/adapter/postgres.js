@@ -3,7 +3,7 @@
  * 针对 node-postgres（https://github.com/brianc/node-postgres）驱动的适配器
  */
 
-const { Client } = require('pg');
+const { Client } = require("pg");
 
 // connection
 function connection({ url, name, user, passwd, port }) {
@@ -19,13 +19,13 @@ function connection({ url, name, user, passwd, port }) {
 	return {
 		begin: async () => {
 			client.connect();
-			await client.query('BEGIN');
+			await client.query("BEGIN");
 		},
 		commit: async () => {
-			await client.query('COMMIT');
+			await client.query("COMMIT");
 		},
 		rollback: async () => {
-			await client.query('ROLLBACK');
+			await client.query("ROLLBACK");
 		},
 		prepare: (sql) => {
 			return statement(client, sql);

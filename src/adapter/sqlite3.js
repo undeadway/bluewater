@@ -114,7 +114,7 @@ function statement(conn, sql) {
 			});
 		},
 		insert: update,
-		'delete': update,
+		"delete": update,
 		update: update,
 		close: close
 	}
@@ -132,7 +132,7 @@ function getRollback(savePoint) {
 	if (savePoint) {
 		rollBack += savePoint;
 	}
-	rollBack += ';';
+	rollBack += ";";
 
 	return rollBack;
 }
