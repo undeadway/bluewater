@@ -9,7 +9,6 @@
  * 而不是直接调用这里的 connection 中定义好的方法来执行了
  */
 const Database = require("sqlite3").verbose().Database;
-const slice = Array.prototype.slice, isArray = Array.isArray;
 const BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;";
 const ROLLBACK = " ROLLBACK ", COMMIT = "COMMIT;", DEFAULT_LEVEL = "IMMEDIATE", VACUUM = "VACCUM;";
 const fs = require("fs");
