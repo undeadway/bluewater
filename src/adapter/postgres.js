@@ -3,12 +3,12 @@
  * 针对 node-postgres（https://github.com/brianc/node-postgres）驱动的适配器
  */
 
-const { Client } = require("pg");
+const pg = require("pg");
 
 // connection
-function connection({ url, name, user, passwd, port }) {
+function connection({ type, url, name, user, passwd, port }) {
 
-	let client = new Client({
+	let client = new pg[type]({
 		user: user,
 		host: url,
 		database: name,
