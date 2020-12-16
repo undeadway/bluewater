@@ -15,8 +15,9 @@
     "pg": "2.6.1",
     "sqlite3": "5.0.0"
   },
-  "script": {
-    "build": " test/index.js"
+  "scripts": {
+    "build": " test/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "description": "一个基于 Node.js的数据库接口适配器，与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异",
   "bugs": {
@@ -35,8 +36,5 @@
     "driver",
     "javascript"
   ],
-  "author": "hzwaygc@Gmail.com",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  "author": "hzwaygc@Gmail.com"
 }
