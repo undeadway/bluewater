@@ -1,4 +1,4 @@
-/*
+/**
  * 一个基于 Node.js的数据库接口适配器
  * 与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的差异
  * 使用的时候只要 
@@ -21,10 +21,17 @@
 let BLUEWATER_DEFS, dbConnConfig, useCache, dbName, methodQuery;
 
 // 这个函数预读入数据库的配置信息
-let db = (function (readFileSync) {
+const db = (function () {
+
+	const { readFileSync, existsSync } = require("fs");
 
 	// 这里是读入 bluewater 的所有 sql 配置
-	BLUEWATER_DEFS = JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8");
+	if (existsSync(process.cwd() + "/res/json/sql.json")) {
+		BLUEWATER_DEFS = JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8");
+	} else {
+		BLUEWATER_DEFS = {};
+	}
+	
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
@@ -35,7 +42,7 @@ let db = (function (readFileSync) {
 
 	// 数据库驱动入口
 	return require("./adapter/" + dbName);
-})(require("fs").readFileSync);
+})();
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
 const OPERTATING_METHODS = ["insert", "delete", "update", "select"
@@ -49,23 +56,35 @@ function sqlError(msg) {
 	throw new Error(msg || "SQL 错误");
 }
 
-async function queryFunction(queryName, paras, conn) {
+async function queryFunction(queryName, paras, method, conn) {
 
-	let { method, sql, timeout, condition } = BLUEWATER_DEFS[queryName];
+	let __sql, sqlArgs, _method, _timeout = 0;
+	
+	if (BLUEWATER_DEFS[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
+		let { method, sql, timeout, condition } = BLUEWATER_DEFS[queryName];
 
-	method = String.trim(method.toLowerCase());
-	timeout = timeout || 0;
+		__sql = sql;
+		timtout = timeou || 0;
+		_method = String.trim(method.toLowerCase());
+		_timeout = timeout;
 
-	if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持 ${method} 。`);
+		if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持 ${method} 。`);
 
-	let sqlArgs = {
-		from: paras,
-		condition: condition
-	};
+		sqlArgs = {
+			from: paras,
+			condition: condition
+		};
+		
+	} else { // 如果 BLUEWATER_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
+		__sql = queryName;
+		sqlArgs = paras;
+		_method = method;
+	}
 
-	let [_sql, sqlPara] = db.compire(sql, sqlArgs);
+	let [_sql, sqlPara] = db.compire(__sql, sqlArgs);
+
 	let stmt = conn.prepare(_sql); // 实例化 stmt 并获得执行方法
-
+	
 	async function closeStmt() {
 		if (stmt) {
 			await stmt.close();
@@ -86,12 +105,12 @@ async function queryFunction(queryName, paras, conn) {
 			db.clearCache(); // 非 select 或 不使用 cache 操作的时候，清空缓存
 		}
 
-		let stmtMethod = stmt[method];
+		let stmtMethod = stmt[_method];
 
-		if (!stmtMethod) sqlError(`${dbName} 暂时不支持所定义的 ${method} 操作： `);
+		if (!stmtMethod) sqlError(`${dbName} 暂时不支持所定义的 ${_method} 操作： `);
 
 		// 执行数据库
-		Coralian.logger.log(`${queryName} start # ${method}`);
+		Coralian.logger.log(`${queryName} start # ${_method}`);
 		Coralian.logger.log(_sql);
 		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
 
@@ -101,7 +120,7 @@ async function queryFunction(queryName, paras, conn) {
 		}
 
 		if (useCache && method === 'select') { // 把搜索到的结果集放到缓存中
-			db.putCache(_sql, sqlPara, result, timeout);
+			db.putCache(_sql, sqlPara, result, _timeout);
 		}
 
 		return result;
@@ -143,7 +162,7 @@ function bluewater() {
 
 	async function runQueryFunction(queryName, arg) {
 		try {
-			let result = await queryFunction(queryName, arg.condition, conn);
+			let result = await queryFunction(queryName, arg.condition, arg.method, conn);
 			arg.success(result);
 		} catch (e) {
 			Coralian.logger.err(e);
@@ -238,5 +257,7 @@ function bluewater() {
 
 bluewater.getDatabaseInfo = db.getDatabaseInfo;
 bluewater.getDBSize = db.getDBSize;
+
+bluewater.lambda = require("./lambda")(bluewater);
 
 module.exports = bluewater;

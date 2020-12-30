@@ -134,7 +134,7 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 				}
 				return compireObjectToArrray(input, paras);
 			} else {
-				return [input, []];
+				return [input, sqlArgs];
 			}
 		},
 		getRecordsList: (rows) => {
