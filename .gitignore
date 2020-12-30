@@ -1,5 +1,3 @@
 node_modules
 db
 .vscode
-res/sql.json
-res/bluewater.json
