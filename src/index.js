@@ -11,13 +11,11 @@
  * bluewater只负责将 getList 要进行的是哪种操作（增删改查）、所要操作的sql 等
  * 映射到各个数据库驱动中去，但 如何实现 getList
  * 实际的操作依然还是交给各个数据库驱动自己去实现
+ * 
+ * 现在所有 sql 都定义在一个大对象下， sql 不多的时候可以这么搞，
+ * 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
+ * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
  */
-
-/*
-* 现在所有 sql 都定义在一个大对象下， sql 不多的时候可以这么搞，
-* 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
-* 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
-*/
 let BLUEWATER_DEFS, dbConnConfig, useCache, dbName, methodQuery;
 
 // 这个函数预读入数据库的配置信息

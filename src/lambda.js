@@ -1,6 +1,9 @@
 /**
  * Lamdba 表达式的方式
- * 只可用于单表查询
+ * 现只可用于单表查询
+ * 
+ * 支持的操作
+ * =
  */
 
 const { errorCast } = Error;
@@ -112,8 +115,12 @@ module.exports = exports = (bluewater) => {
 
 				return lambda;
 			},
-			notEqual: () => {
+			notEqual: (column, value) => {
 
+				wheres.push(`${column} <> #[${column}]`);
+				paras[column] = value;
+
+				return lambda;
 			},
 			overthan: (column, value) => {
 
