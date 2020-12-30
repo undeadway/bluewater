@@ -12,7 +12,6 @@
     "coralian": "0.0.21"
   },
   "devDependencies": {
-    "pg": "2.6.1",
     "sqlite3": "5.0.0"
   },
   "scripts": {
