@@ -77,6 +77,7 @@ async function queryFunction(queryName, paras, method, conn) {
 		
 	} else { // 如果 BLUEWATER_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
 		__sql = queryName;
+		queryName = `Lamdba ${method}`;
 		sqlArgs = paras;
 		_method = method;
 	}
