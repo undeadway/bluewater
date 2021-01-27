@@ -5,12 +5,6 @@
 
 const pg = require("pg");
 
-pg.type = {
-    Client: "Client",
-    Pool: "Pool",
-    Result: "Result"
-};
-
 // connection
 function connection({ type, url, name, user, passwd, port }) {
 
@@ -65,6 +59,12 @@ let db = require("./base")((paras) => {
 db.connect = connection;
 db.getDBSize = function () {
 
+};
+
+db.type = {
+    Client: "Client",
+    Pool: "Pool",
+    Result: "Result"
 };
 
 db.getDatabaseInfo = function () {
