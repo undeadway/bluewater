@@ -17,6 +17,7 @@
  * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
  */
 let BLUEWATER_DEFS, dbConnConfig, useCache, dbName, methodQuery;
+const STR_ON = "ON";
 
 // 这个函数预读入数据库的配置信息
 const db = (function () {
@@ -33,10 +34,10 @@ const db = (function () {
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
-	useCache = database.cache;
+	useCache = database["use-cache"] === STR_ON;
 	dbConnConfig = database.connection;
 	dbName = database["database-name"];
-	methodQuery = database["method-query"];
+	methodQuery = database["method-query"] === STR_ON;
 
 	// 数据库驱动入口
 	return require("./adapter/" + dbName);
@@ -242,7 +243,7 @@ function bluewater() {
 		}
 	};
 
-	if (methodQuery === 'ON') {
+	if (methodQuery) {
 		for (let queryName in BLUEWATER_DEFS) {
 
 			bwObj[queryName] = async (arg) => {

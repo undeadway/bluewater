@@ -7,5 +7,5 @@
 		"passwd": ""
 	},
 	"method-query":"ON",
-	"cache": true
+	"use-cache": "ON"
 }
