@@ -15,7 +15,7 @@ function sqlError(msg) {
 
 const selectCache = require("./../util/select-cache");
 
-module.exports = (getPrepareMark, initPrepareMark) => {
+module.exports = (getPrepareMark) => {
 
 	/*
 	 * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
@@ -153,19 +153,19 @@ module.exports = (getPrepareMark, initPrepareMark) => {
 			return rs;
 		},
 		putCache: (sql, para, obj, expire = 0) => {
-			selectCache.put(sql, para, obj, expire, initPrepareMark);
+			selectCache.put(sql, para, obj, expire);
 		},
 		getCache: (sql, para) => {
-			return selectCache.get(sql, para, initPrepareMark);
+			return selectCache.get(sql, para);
 		},
 		clearCache: () => {
 			selectCache.clear();
 		},
 		removeCache: (sql, para) => {
-			selectCache.remove(sql, para, initPrepareMark);
+			selectCache.remove(sql, para);
 		},
 		hasCache : (sql, para) => {
-			selectCache.has(sql, para, initPrepareMark);
+			selectCache.has(sql, para);
 		}
 	};
 };

@@ -1,39 +1,54 @@
 /*
  * 数据库缓存
+ * 缓存采用两重缓存形式
+ * 1. 先缓存 sql，
+ * 2. 再分 sql 缓存 条件（序列化后）
  */
 var map = new Map();
+/**
+ * 
+ * @param {*} sql SQL
+ * @param {*} param 请求条件
+ * @param {*} records 返回值
+ * @param {*} timeout 过期时间
+ */
+this.put = function (sql, param, records, timeout) {
 
-this.put = function (sql, param, obj, timeout, initPrepareMark) {
+	if (timeout <= 0) return; // 如果缓存时间为0则不添加到缓存
 
-	if (timeout === 0) return; // 如果缓存时间为0则不添加到缓存
+	let obj = map.get(sql);
+	param = JSON.stringify(param);
+	if (!obj) {
+		obj = {};
+		map.set(sql, obj);
+	}
 
-	map.set(createKey(sql, param, initPrepareMark), { value: obj, count: 0, timeout: timeout * 1000, created: Date.now() });
+	obj[param] = { value: records, count: 0, timeout: timeout * 1000, created: Date.now() };
 }
 
-this.get = function (sql, param, initPrepareMark) {
+this.get = function (sql, param) {
 
-	var result = map.get(createKey(sql, param, initPrepareMark));
+	let obj = map.get(sql);
+	if (!obj) return null;
 
-	if (!result) return null;
-	if (isTimeout(result)) return null;
+	let records = obj[ JSON.stringify(param)];
+	if (isTimeout(records)) return null;
 
-	var value = result.value;
+	var value = records.value;
 
 	if (!!value) {
-		result.count++; // TODO 这里是用来判断热门程度的，暂时没啥用
+		records.count++; // TODO 这里是用来判断热门程度的，暂时没啥用
 		return value;
 	} else {
 		return null;
 	}
 }
 
-this.has = function (sql, param, initPrepareMark) {
+this.has = function (sql, param) {
 
-	var result = map.has(createKey(sql, param, initPrepareMark));
-	if (result === null || result === undefined) return false;
-	if (isTimeout(result)) return false;
+	let records = map.get(sql, param);
 
-	return true;
+	return records !== null;
 }
 
 
@@ -44,25 +59,25 @@ this.size = function () {
 	return map.size;
 }
 
-this.remove = function (sql, param, initPrepareMark) {
+this.remove = function (sql, param) {
 
-	return map.remove(createKey(sql, param, initPrepareMark));
-}
+	if (!param) {
+		return map.remove(sql);
+	} else {
+		let obj = map.get(sql);
+		if (!obj) return null;
 
-function createKey(sql, param, initPrepareMark) {
+		let key = JSON.stringify(param);
 
-	let _initPrepareMark = typeIs(initPrepareMark, 'function') ? initPrepareMark() : initPrepareMark;
-	if (!param || param.length === 0) return sql;
+		let result = obj[key];
+		delete obj[key];
 
-	paras = param.slice();
-
-	while (String.contains(sql, _initPrepareMark)) {
-		if (paras.length === 0) throw new Error(sql);
-		sql = sql.replace(_initPrepareMark, paras.shift());
+		if (result) {
+			return result.value;
+		} else {
+			return null;
+		}
 	}
-	if (paras.length !== 0) throw new Error(paras);
-
-	return sql;
 }
 
 function saveToFile() {

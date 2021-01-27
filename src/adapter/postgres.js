@@ -53,8 +53,6 @@ function statement(client, sql) {
 
 let db = require("./base")((paras) => {
 	return `$${paras.length}`;
-}, () => {
-	return new RegExp("$[d]+");
 });
 db.connect = connection;
 db.getDBSize = function () {
