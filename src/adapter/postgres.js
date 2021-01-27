@@ -5,10 +5,16 @@
 
 const pg = require("pg");
 
+pg.type = {
+    Client: "Client",
+    Pool: "Pool",
+    Result: "Result"
+};
+
 // connection
 function connection({ type, url, name, user, passwd, port }) {
 
-	const client = new pg[type]({
+	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 的修改
 		user     : user,
 		host     : url,
 		database : name,
