@@ -33,8 +33,6 @@ this.put = function (sql, param, records, timeout) {
 		throw new Error(`当前关键词已被占用，请换一个关键词。`);
 	}
 
-	if (timeout <= 0) return; // 如果缓存时间为0则不添加到缓存
-
 	let obj = map.get(sql);
 	param = JSON.stringify(param);
 	if (!obj) {
@@ -95,6 +93,8 @@ this.remove = function (sql, param) {
 
 		let result = obj[key];
 		delete obj[key];
+		obj.size--;
+		obj.count -= result.count;
 
 		if (result) {
 			return result.value;
@@ -104,20 +104,12 @@ this.remove = function (sql, param) {
 	}
 }
 
-function saveToFile() {
-
-}
-
-function readFromFile() {
-
-}
-
 function isTimeout(obj) {
 
+	// timeout < 0 则认为永久缓存
+	if (obj.timeout < 0) return false;
 	// timeout 为 0
-	if (obj.timeout <= 0) return true;
+	if (obj.timeout == 0) return true;
 	// 创建到现在已经超过timeoue 的保质期
-	if (obj.timeout + obj.created < Date.now()) return true;
-
-	return false;
+	return (obj.timeout + obj.created) <= Date.now();
 }
