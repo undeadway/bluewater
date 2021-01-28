@@ -3,9 +3,23 @@
  * 缓存采用两重缓存形式
  * 1. 先缓存 sql，
  * 2. 再分 sql 缓存 条件（序列化后）
+ * 
+ * 通过 size（项目数量）、count（访问次数） 来判断热门程度，以决定是否需要缓存
+ * 以及用何种方式进行缓存
+ * 
+ * 逻辑：
+ * 理论上如果所有数据的访问一致，则 项目缓存访问次数 / 全局缓存访问次数 = 1 / 项目数量
+ * 但实际上所有访问并不可能都一致，甚至接近，所以
+ * 项目缓存访问次数 / 全局缓存访问次数 > 1 / 项目数量 表示访问数量多，较为热门
+ * 项目缓存访问次数 / 全局缓存访问次数 < 1 / 项目数量 表示访问数量少，较为冷门
+ * 
+ * 根据以上逻辑，设立两个阈值点：[3 / 项目数量, 0.1 / 项目数量]
+ * 项目缓存访问次数 / 全局缓存访问次数 > 3 / 项目数量 时，则全部计入内存缓存
+ * 项目缓存访问次数 / 全局缓存访问次数 < 0.1 / 项目数量，则不缓存
+ * 中间则全部使用文件缓存
  */
 const map = new Map();
-const keySet = new Set("count");
+const keySet = new Set(["count", "size"]);
 /**
  * 
  * @param {*} sql SQL
@@ -25,11 +39,13 @@ this.put = function (sql, param, records, timeout) {
 	param = JSON.stringify(param);
 	if (!obj) {
 		obj = {};
+		obj.size = 0;
 		map.set(sql, obj);
 	}
 
 	obj[param] = { value: records, count: 0, timeout: timeout * 1000, created: Date.now() };
 	obj.count = 0;
+	obj.size++;
 }
 
 this.get = function (sql, param) {
@@ -37,14 +53,14 @@ this.get = function (sql, param) {
 	let obj = map.get(sql);
 	if (!obj) return null;
 
-	let records = obj[ JSON.stringify(param)];
+	let records = obj[JSON.stringify(param)];
 	if (isTimeout(records)) return null;
 
 	var value = records.value;
 
 	if (!!value) {
 		obj.count++;
-		records.count++; // TODO 这里是用来判断热门程度的，暂时没啥用
+		records.count++;
 		return value;
 	} else {
 		return null;
