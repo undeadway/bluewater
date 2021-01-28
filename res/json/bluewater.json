@@ -1,7 +1,7 @@
 {
-	"database-name": "sqlite3",
+	"database-name": "mysql",
 	"connection": {
-		"url": "./db/test.db",
+		"url": "",
 		"name": "",
 		"user": "",
 		"passwd": ""
