@@ -7,5 +7,8 @@
 		"passwd": ""
 	},
 	"method-query":"ON",
-	"use-cache": "ON"
+	"use-cache": "ON",
+	"archive": {
+		
+	}
 }
