@@ -113,3 +113,18 @@ function isTimeout(obj) {
 	// 创建到现在已经超过timeoue 的保质期
 	return (obj.timeout + obj.created) <= Date.now();
 }
+
+/**
+ * 归档函数自身不实现什么时候进行归档处理
+ * 只对哪些缓存进行归档进行处理
+ * 
+ * 最热的缓存放在内存中
+ * 中等的放在文件
+ * 最冷的不做缓存
+ * 每次归档的间隔判断交给程序配置
+ */
+this.archive = () => {
+
+	
+
+};
