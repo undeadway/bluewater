@@ -16,31 +16,34 @@
  * 今后sql多了以后，要考虑将这些 sql 拆成多个子对象（命名空间概念）分别加载
  * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
  */
-let BLUEWATER_DEFS, dbConnConfig, useCache, dbName, methodQuery;
-const STR_ON = "ON";
+const archive = require("./util/archive"); // 这里主要考虑归档处理可能被中途启动
 
 // 这个函数预读入数据库的配置信息
-const db = (function () {
+const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
 
 	const { readFileSync, existsSync } = require("fs");
+	const STR_ON = "ON";
 
-	// 这里是读入 bluewater 的所有 sql 配置
-	if (existsSync(process.cwd() + "/res/json/sql.json")) {
-		BLUEWATER_DEFS = JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8");
-	} else {
-		BLUEWATER_DEFS = {};
-	}
-	
+	let def = existsSync(process.cwd() + "/res/json/sql.json") ?
+				// 这里是读入 bluewater 的所有 sql 配置，或者配置为空
+				JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8")
+				: {};
+
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
-	useCache = database["use-cache"] === STR_ON;
-	dbConnConfig = database.connection;
-	dbName = database["database-name"];
-	methodQuery = database["method-query"] === STR_ON;
+	let useCache = database["use-cache"] === STR_ON,
+		dbConnConfig = database.connection,
+		dbName = database["database-name"],
+		methodQuery = database["method-query"] === STR_ON;
+
+	// 每个 bluewater 都只有一份 archive 的单例，所以这里不需要进行导出或者其他处理
+	// init 之后程序进行自动化的归档处理，如果配置中没有配置 archive 则后续也不会进行自动哦归档处理
+	archive.init(database.archive);
 
 	// 数据库驱动入口
-	return require("./adapter/" + dbName);
+	return [def, require("./adapter/" + dbName),
+			dbConnConfig, useCache, dbName, methodQuery];
 })();
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
@@ -63,11 +66,10 @@ async function queryFunction(queryName, paras, method, conn) {
 		let { method, sql, timeout, condition } = BLUEWATER_DEFS[queryName];
 
 		__sql = sql;
-		timtout = timeou || 0;
+		_timeout = timtout = timeout || 0;
 		_method = String.trim(method.toLowerCase());
-		_timeout = timeout;
 
-		if (!Array.has(OPERTATING_METHODS, method)) sqlError(`bluewater 暂时不支持 ${method} 。`);
+		if (!Array.has(OPERTATING_METHODS, _method)) sqlError(`bluewater 暂时不支持 ${_method} 。`);
 
 		sqlArgs = {
 			from: paras,
@@ -197,7 +199,6 @@ function bluewater() {
 								results[item.name] = [ret];
 								results[item.name].push(result);
 							}
-						
 						}
 						item.success(result);
 					}
@@ -229,7 +230,6 @@ function bluewater() {
 							results[item.name] = [ret];
 							results[item.name].push(result);
 						}
-					
 					}
 				}
 				if (success) success(results);
