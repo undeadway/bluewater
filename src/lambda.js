@@ -89,7 +89,7 @@ module.exports = exports = (bluewater) => {
 
 				return lambda;
 			},
-			havging: () => {
+			having: () => {
 				isHaving = true;
 			},
 			groupBy: (column) => {
@@ -122,14 +122,14 @@ module.exports = exports = (bluewater) => {
 
 				return lambda;
 			},
-			overthan: (column, value) => {
+			overThan: (column, value) => {
 
 				wheres.push(`${column} > #[${column}]`);
 				paras[column] = value;
 
 				return lambda;
 			},
-			lessthan: (column, value) => {
+			lessThan: (column, value) => {
 
 				wheres.push(`${column} < #[${column}]`);
 				paras[column] = value;
