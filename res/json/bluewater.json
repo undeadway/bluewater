@@ -9,6 +9,8 @@
 	"method-query":"ON",
 	"use-cache": "ON",
 	"archive": {
-		
+		"dir": "./archive/",
+		"type": "json",
+		"interval": ""
 	}
 }
