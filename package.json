@@ -9,9 +9,10 @@
     "url": "git+https://gitee.com/undeadway/bluewater.git"
   },
   "dependencies": {
-    "coralian": "0.0.21"
+    "coralian": "0.0.22"
   },
   "devDependencies": {
+    "pg": "^8.6.0",
     "sqlite3": "5.0.0"
   },
   "scripts": {
