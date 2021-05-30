@@ -4,6 +4,7 @@
  */
 
 const pg = require("pg");
+const connect = require("./../components/connect");
 
 // connection
 function connection({ type, url, name, user, passwd, port }) {
@@ -16,42 +17,10 @@ function connection({ type, url, name, user, passwd, port }) {
 		port     : port
 	});
 
-	return {
-		begin: async () => {
-			client.connect();
-			await client.query("BEGIN");
-		},
-		commit: async () => {
-			await client.query("COMMIT");
-		},
-		rollback: async () => {
-			await client.query("ROLLBACK");
-		},
-		prepare: (sql) => {
-			return statement(client, sql);
-		},
-		close: () => {
-			client.end();
-		}
-	}
+	return connect(client);
 };
 
-function statement(client, sql) {
-
-	async function execute(arg) {
-		return await client.query(sql, arg);
-	}
-
-	return {
-		select: execute,
-		insert: execute,
-		update: execute,
-		delete: execute,
-		close: Function.EMPTY_BODY
-	}
-}
-
-const db = require("./base")((paras) => {
+const db = require("./../components/base")((paras) => {
 	return `$${paras.length}`;
 });
 db.connect = connection;
