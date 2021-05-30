@@ -4,10 +4,10 @@
  */
 
 const pg = require("pg");
-const connect = require("./../components/connect");
+const connection = require("./../components/connection");
 
-// connection
-function connection({ type, url, name, user, passwd, port }) {
+// connect
+function connect({ type, url, name, user, passwd, port }) {
 
 	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 的修改
 		user     : user,
@@ -17,13 +17,13 @@ function connection({ type, url, name, user, passwd, port }) {
 		port     : port
 	});
 
-	return connect(client);
+	return connection(client);
 };
 
 const db = require("./../components/base")((paras) => {
 	return `$${paras.length}`;
 });
-db.connect = connection;
+db.connect = connect;
 db.getDBSize = function () {
 	return 0;
 };

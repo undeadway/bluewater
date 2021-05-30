@@ -18,7 +18,7 @@ let fileName = null; // 这里要赋值，所以不能用 const 定义
  * 因为 sqlite3 驱动不支持 driver.query 形式的方式
  * 所以 sqlite3 不采用集成方式获得 connection
  */
-function connection({ url }) {
+function connect({ url }) {
 
 	fileName = url;
 	let conn = new Database(url);
@@ -144,7 +144,7 @@ function prepareMark() {
 }
 
 const db = require("./base")(prepareMark);
-db.connect = connection;
+db.connect = connect;
 db.getDBSize = function () {
 
 	let stat = fs.statSync(fileName);

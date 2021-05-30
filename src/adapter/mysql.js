@@ -3,9 +3,9 @@
  * 针对 https://github.com/mysqljs/mysql 驱动的适配器
  */
 const mysql = require("mysql");
-const connect = require("./../components/connect");
+const connection = require("./../components/connection");
 
-function connection ({ type = "Connection", url, name, user, passwd }) {
+function connect ({ type = "Connection", url, name, user, passwd }) {
 
 	const client = mysql[`create${type}`]({
 		host	 : url,
@@ -14,12 +14,12 @@ function connection ({ type = "Connection", url, name, user, passwd }) {
 		database : name
 	});
 
-	return connect(client);
+	return connection(client);
 }
 
 const db = require("./../components/base")((str) => str);
 
-db.connect = connection;
+db.connect = connect;
 db.getDBSize = function () {
 	return 0;
 };
