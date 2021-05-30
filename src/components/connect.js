@@ -1,23 +1,23 @@
 const statement = require("./statement");
 
-function connection(client) {
+function connection(driver) {
 
     return {
 		begin: async () => {
-			client.connect();
-			await client.query("BEGIN");
+			driver.connect();
+			await driver.query("BEGIN");
 		},
 		commit: async () => {
-			await client.query("COMMIT");
+			await driver.query("COMMIT");
 		},
 		rollback: async () => {
-			await client.query("ROLLBACK");
+			await driver.query("ROLLBACK");
 		},
 		prepare: (sql) => {
-			return statement(client, sql);
+			return statement(driver, sql);
 		},
 		close: () => {
-			client.end();
+			driver.end();
 		}
 	}
 
