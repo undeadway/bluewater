@@ -14,7 +14,10 @@ const ROLLBACK = " ROLLBACK ", COMMIT = "COMMIT;", DEFAULT_LEVEL = "IMMEDIATE", 
 const fs = require("fs");
 let fileName = null; // 这里要赋值，所以不能用 const 定义
 
-// connection
+/**
+ * 因为 sqlite3 驱动不支持 driver.query 形式的方式
+ * 所以 sqlite3 不采用集成方式获得 connection
+ */
 function connection({ url }) {
 
 	fileName = url;
