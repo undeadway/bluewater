@@ -12,6 +12,7 @@
     "coralian": "0.0.22"
   },
   "devDependencies": {
+    "mysql": "^2.18.1",
     "pg": "^8.6.0",
     "sqlite3": "5.0.0"
   },
