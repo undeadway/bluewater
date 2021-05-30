@@ -153,7 +153,7 @@ async function queryFunction(queryName, paras, method, conn) {
  */
 function bluewater() {
 
-	let conn = db.connect(dbConnConfig);
+	const conn = db.connect(dbConnConfig);
 
 	async function closeConn() {
 		if (conn) {
@@ -176,7 +176,7 @@ function bluewater() {
 		}
 	}
 
-	let bwObj = {
+	const bwObj = {
 		// 执行单条sql
 		query: async (arg) => {
 			await runQueryFunction(arg.name, arg);
