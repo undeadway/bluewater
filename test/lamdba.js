@@ -1,5 +1,5 @@
 require("coralian");
-let bluewater = require("../src/index");
+const bluewater = require("../src/index");
 
 bluewater.lambda("test")
 .like("A", 1, "%A")

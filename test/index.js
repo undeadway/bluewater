@@ -1,4 +1,4 @@
 require("coralian");
-let bluewater = require("../src/index");
+const bluewater = require("../src/index");
 
 
