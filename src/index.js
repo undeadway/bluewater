@@ -186,7 +186,7 @@ function bluewater() {
 			try {
 				await conn.begin();
 				let results = {};
-				while ((item = queue.shift()) != undefined) {
+				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction(item.name, item.condition, conn);
 					if (item.success) {
 						let ret = results[item.name];
@@ -218,7 +218,7 @@ function bluewater() {
 		execute: async (queue, success, failed) => {
 			try {
 				let results = {};
-				while ((item = queue.shift()) != undefined) {
+				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction(item.name, item.condition, conn);
 					let ret = results[item.name];
 					if (!ret) {
