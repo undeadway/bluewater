@@ -24,15 +24,15 @@ const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() =>
 	const { readFileSync, existsSync } = require("fs");
 	const STR_ON = "ON";
 
-	let def = existsSync(process.cwd() + "/res/json/sql.json") ?
+	const def = existsSync(process.cwd() + "/res/json/sql.json") ?
 				// 这里是读入 bluewater 的所有 sql 配置，或者配置为空
 				JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8")
 				: {};
 
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
-	let database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
-	let useCache = database["use-cache"] === STR_ON,
+	const database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
+	const useCache = database["use-cache"] === STR_ON,
 		dbConnConfig = database.connection,
 		dbName = database["database-name"],
 		methodQuery = database["method-query"] === STR_ON;
@@ -42,7 +42,7 @@ const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() =>
 	archive.init(database.archive);
 
 	// 数据库驱动入口
-	return [def, require("./adapter/" + dbName),
+	return [def, require(`./adapter/${dbName}`),
 			dbConnConfig, useCache, dbName, methodQuery];
 })();
 
