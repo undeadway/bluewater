@@ -20,10 +20,10 @@ function connection(driver) {
 	}
 }
 
-function statement(client, sql) {
+function statement(driver, sql) {
 
 	async function execute(arg) {
-		return await client.query(sql, arg);
+		return await driver.query(sql, arg);
 	}
 
 	return {
