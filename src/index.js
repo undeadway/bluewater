@@ -50,7 +50,7 @@ const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() =>
 const OPERTATING_METHODS = ["insert", "delete", "update", "select"
 	// TODO bluewater 暂时不支持所定义的 SQL 操作：
 	// trigger,
-	// procedure,
+	,"procedure"
 	// "function"
 ];
 

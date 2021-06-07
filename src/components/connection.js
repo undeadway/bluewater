@@ -31,6 +31,7 @@ function statement(client, sql) {
 		insert: execute,
 		update: execute,
 		delete: execute,
+		procedure: execute,
 		close: Function.EMPTY_BODY
 	}
 }
