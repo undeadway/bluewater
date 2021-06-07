@@ -143,7 +143,7 @@ function prepareMark() {
 	return "?";
 }
 
-const db = require("./base")(prepareMark);
+const db = require("./../components/base")(prepareMark);
 db.connect = connect;
 db.getDBSize = function () {
 
