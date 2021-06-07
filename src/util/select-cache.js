@@ -18,7 +18,7 @@
  * 项目缓存访问次数 / 全局缓存访问次数 < 0.1 / 项目数量，则不缓存
  * 中间则全部使用文件缓存
  */
-const map = new Map();
+let map = new Map(); // 这里要重置，所以不能用 const
 const keySet = new Set(["count", "size"]);
 /**
  * 
