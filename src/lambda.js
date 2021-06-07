@@ -55,20 +55,30 @@ module.exports = exports = (bluewater) => {
 			},
 			update: (obj, callback) => {
 
+				let sql = [];
 				sql.push(`UPDATE ${tableName} SET `);
-				obj.map(o => {
-					sql.push();
-				});
 
+				for (let key in obj) {
+					sql.push(`${key} = #[${key}]`);
+				}
+
+				paras = obj;
+
+				query(sql.join(" "), "update", callback);
 			},
 			"delete": (callback) => {
 
+				let sql = [];
 				sql.push(`DELETE FROM ${tableName} `);
 
+				query(sql.join(" "), "delete", callback);
 			},
 			insert: (callback) => {
 
+				let sql = [];
 				sql.push(`INSERT INTO ${tableName} `);
+
+				query(sql.join(" "), "insert", callback);
 			},
 			limit: (from, cnt) => {
 
