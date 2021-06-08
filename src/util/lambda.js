@@ -12,12 +12,13 @@ module.exports = exports = (bluewater) => {
 	
 	return (tableName) => {
 
-		const db = bluewater();
-
 		let wheres = [], exts = [], paras = {}; // 辅助条件
 		let distincts = null, isHaving = false;
 
 		function query(sql, method, callback) {
+
+			const db = bluewater();
+
 			db.query({
 				name: sql,
 				condition: {
