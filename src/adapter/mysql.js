@@ -3,7 +3,7 @@
  * 针对 https://github.com/mysqljs/mysql 驱动的适配器
  */
 const mysql = require("mysql");
-const connection = require("./../parts/connection");
+const connection = require("./parts/connection");
 
 function connect ({ type = "Connection", url, name, user, passwd }) {
 
@@ -17,7 +17,7 @@ function connect ({ type = "Connection", url, name, user, passwd }) {
 	return connection(client);
 }
 
-const db = require("./../parts/base")((str) => str);
+const db = require("./parts/base")((str) => str);
 
 db.connect = connect;
 db.getDBSize = function () {
