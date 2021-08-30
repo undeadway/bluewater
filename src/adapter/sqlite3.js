@@ -156,4 +156,8 @@ db.getDatabaseInfo = function () {
 
 };
 
-module.exports = db;
+module.exports = new Proxy(db, {
+	get: (target, prop) => {
+		return target[prop];
+	}
+});

@@ -28,14 +28,24 @@ db.getDBSize = function () {
 	return 0;
 };
 
-db.type = {
+const type = {
     Client: "Client",
     Pool: "Pool",
     Result: "Result"
 };
 
+db.type = new Proxy(type, {
+	get: (target, prop) => {
+		return target[prop];
+	}
+});
+
 db.getDatabaseInfo = function () {
 
 };
 
-module.exports = db;
+module.exports = new Proxy(db, {
+	get: (target, prop) => {
+		return target[prop];
+	}
+});
