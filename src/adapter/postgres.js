@@ -4,7 +4,7 @@
  */
 
 const pg = require("pg");
-const connection = require("./../components/connection");
+const connection = require("./../parts/connection");
 
 // connect
 function connect({ type, url, name, user, passwd, port }) {
@@ -20,7 +20,7 @@ function connect({ type, url, name, user, passwd, port }) {
 	return connection(client);
 };
 
-const db = require("./../components/base")((paras) => {
+const db = require("./../parts/base")((paras) => {
 	return `$${paras.length}`;
 });
 db.connect = connect;
