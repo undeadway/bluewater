@@ -5,7 +5,7 @@
  * 支持的操作
  * =
  */
-
+ const typeMapping = require("../util/type-mapping");
 const { errorCast } = Error;
 
 module.exports = exports = (bluewater) => {
@@ -104,12 +104,33 @@ module.exports = exports = (bluewater) => {
 
 				query(sql.join(" "), "delete", callback);
 			},
-			insert: (callback) => {
+			insert: (datas, callback) => {
 
 				let sql = [];
 				sql.push(`INSERT INTO ${tableName} `);
+				let columns = [],
+					columnFilled = false;
+				let inserts = datas.map(data => {
+					let insertData = [];
+					for (key in data) {
+						let obj = data[key];
+						if (!columnFilled) {
+							columns.push(key);
+						}
+						let value = typeMapping.format(obj.value, obj.type);
+						insertData.push(value);
+					}
 
-				query(sql.join(" "), "insert", callback);
+					columnFilled = true;
+
+					return "(" + insertData.join() + ")";
+				});
+
+				sql.push("(" + columns.join() + ")");
+				sql.push(" VALUES ");
+				sql.push(inserts.join());
+
+				query(sql.join(""), "insert", callback);
 			},
 			limit: (from, cnt) => {
 
