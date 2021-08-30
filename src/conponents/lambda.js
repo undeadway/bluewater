@@ -30,35 +30,36 @@ module.exports = exports = (bluewater) => {
 		}
 
 		const lambda = {
-			create: (columnsObj, callback) => {
+			// TODO 是否可以临时创建表，还要再考虑
+			// create: (columnsObj, callback) => {
 
-				let columns = columnsObj.map(column => {
-					let output = column.name;
-					switch (type.toLowerCase()) {
-						case 'nvarchar':
-						case 'varchar':
-						case 'char':
-						case 'nchar':
-						case 'varchar2':
-							break;
-						case 'integer':
-						case 'int':
-							break;
-					}
-					return output;
-				});
+			// 	let columns = columnsObj.map(column => {
+			// 		let output = column.name;
+			// 		switch (type.toLowerCase()) {
+			// 			case 'nvarchar':
+			// 			case 'varchar':
+			// 			case 'char':
+			// 			case 'nchar':
+			// 			case 'varchar2':
+			// 				break;
+			// 			case 'integer':
+			// 			case 'int':
+			// 				break;
+			// 		}
+			// 		return output;
+			// 	});
 
-				let columnsDefine = columns.join();
-				let sql = `CREAE TABLE ${tableName} (
-					${columnsDefine}
-				);`;
+			// 	let columnsDefine = columns.join();
+			// 	let sql = `CREAE TABLE ${tableName} (
+			// 		${columnsDefine}
+			// 	);`;
 
-				query(sql, "create", callback);
-			},
-			drop: () => {
-				let sql = `DROP TABLE IF EXISTS ${tableName};`
-				query(sql, "drop");
-			},
+			// 	query(sql, "create", callback);
+			// },
+			// drop: () => {
+			// 	let sql = `DROP TABLE IF EXISTS ${tableName};`
+			// 	query(sql, "drop");
+			// },
 			select: (columns, callback) => {
 
 				if (!Array.isArray(columns)) errorCast(columns, Array);
