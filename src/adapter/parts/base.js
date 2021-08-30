@@ -3,7 +3,7 @@
  * 在这个类的基础上，可以添加属于各个数据库自己独有的特性来供使用
  */
 
-const selectCache = require("../util/select-cache");
+const selectCache = require("./../../util/select-cache");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
