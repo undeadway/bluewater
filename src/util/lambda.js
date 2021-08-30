@@ -29,7 +29,7 @@ module.exports = exports = (bluewater) => {
 			});
 		}
 
-		let lambda = {
+		const lambda = {
 			select: (columns, callback) => {
 
 				if (!Array.isArray(columns)) errorCast(columns, Array);

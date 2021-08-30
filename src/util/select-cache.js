@@ -18,11 +18,13 @@
  * 项目缓存访问次数 / 全局缓存访问次数 < 0.1 / 项目数量，则不缓存
  * 中间则全部使用文件缓存
  */
+const md5 = require("md5");
+
 let map = new Map(); // 这里要重置，所以不能用 const
 const keySet = new Set(["count", "size"]);
 /**
  * 
- * @param {*} sql SQL
+ * @param {*} hash hash
  * @param {*} param 请求条件
  * @param {*} records 返回值
  * @param {*} timeout 过期时间
@@ -33,25 +35,31 @@ this.put = function (sql, param, records, timeout) {
 		throw new Error(`当前关键词已被占用，请换一个关键词。`);
 	}
 
-	let obj = map.get(sql);
-	param = JSON.stringify(param);
+	let hash = md5(sql);
+	let key = md5(JSON.stringify(param));
+
+	let obj = map.get(hash);
 	if (!obj) {
-		obj = {};
-		obj.size = 0;
-		map.set(sql, obj);
+		obj = {
+			sie: 0, count: 0
+		};
+		map.set(hash, obj);
 	}
 
-	obj[param] = { value: records, count: 0, timeout: timeout * 1000, created: Date.now() };
-	obj.count = 0;
+	obj[key] = { value: records, count: records.length, timeout: timeout * 1000, created: Date.now() };
+	obj.count += records.length;
 	obj.size++;
 }
 
 this.get = function (sql, param) {
 
-	let obj = map.get(sql);
+	let hash = md5(sql);
+	let key = md5(JSON.stringify(param));
+
+	let obj = map.get(hash);
 	if (!obj) return null;
 
-	let records = obj[JSON.stringify(param)];
+	let records = obj[key];
 	if (isTimeout(records)) return null;
 
 	var value = records.value;
@@ -67,15 +75,18 @@ this.get = function (sql, param) {
 
 this.has = function (sql, param) {
 
-	let records = map.get(sql, param);
+	let hash = md5(sql);
+	if (typeIs(param, "object")) {
+		param = JSON.stringify(param);
+	}
+	let records = map.get(hash, param);
 
 	return records !== null;
 }
 
 this.clear = function () {
-	let result = map.clear();
+	map.clear();
 	map = new Map();
-	return result;
 }
 this.size = function () {
 	return map.size;
@@ -83,13 +94,15 @@ this.size = function () {
 
 this.remove = function (sql, param) {
 
-	if (!param) {
-		return map.remove(sql);
-	} else {
-		let obj = map.get(sql);
-		if (!obj) return null;
+	let hash = md5(sql);
 
-		let key = JSON.stringify(param);
+	if (!param) {
+		return map.remove(hash);
+	} else {
+		let key = md5(JSON.stringify(param));
+
+		let obj = map.get(hash);
+		if (!obj) return null;
 
 		let result = obj[key];
 		delete obj[key];

@@ -3,17 +3,16 @@
  * 在这个类的基础上，可以添加属于各个数据库自己独有的特性来供使用
  */
 
+const selectCache = require("./../util/select-cache");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
 // bluewater 对象区分符号常量
 const BW_PARAS_START = "#[", BW_CDTION_START = "?[", BLUEWATER_END = "]";
-
 function sqlError(msg) {
 	throw new Error(msg);
 }
 
-const selectCache = require("./../util/select-cache");
 
 module.exports = (getPrepareMark) => {
 
@@ -152,8 +151,8 @@ module.exports = (getPrepareMark) => {
 
 			return rs;
 		},
-		putCache: (sql, para, obj, expire = 0) => {
-			selectCache.put(sql, para, obj, expire);
+		putCache: (obj, para, expire = 0) => {
+			selectCache.put(obj, para, expire);
 		},
 		getCache: (sql, para) => {
 			return selectCache.get(sql, para);
@@ -161,11 +160,11 @@ module.exports = (getPrepareMark) => {
 		clearCache: () => {
 			selectCache.clear();
 		},
-		removeCache: (sql, para) => {
-			selectCache.remove(sql, para);
+		removeCache: (obj, para) => {
+			selectCache.remove(obj, para);
 		},
-		hasCache : (sql, para) => {
-			selectCache.has(sql, para);
+		hasCache : (obj, para) => {
+			selectCache.has(obj, para);
 		}
 	};
 };
