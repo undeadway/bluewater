@@ -29,6 +29,13 @@ module.exports = exports = (bluewater) => {
 			});
 		}
 
+		function concat (sql) {
+			sql.push(isHaving? "HAVING" : "WHERE");
+			sql = sql.concat(wheres);
+			sql = sql.concat(exts);
+			return sql;
+		}
+
 		const lambda = {
 			// TODO 是否可以临时创建表，还要再考虑
 			// create: (columnsObj, callback) => {
@@ -78,23 +85,25 @@ module.exports = exports = (bluewater) => {
 				let sql = [];
 
 				sql.push(`SELECT ${columnsName} FROM ${tableName}`);
-				sql.push(isHaving? "HAVING" : "WHERE");
-				sql = sql.concat(wheres);
-				sql = sql.concat(exts);
 
+				sql = concat(sql);
 				query(sql.join(" "), "select", callback);
 			},
 			update: (obj, callback) => {
 
 				let sql = [];
 				sql.push(`UPDATE ${tableName} SET `);
+				let updates = [];
 
 				for (let key in obj) {
-					sql.push(`${key} = #[${key}]`);
+					updates.push(`${key} = #[${key}]`);
 				}
 
-				paras = obj;
+				sql.push(updates.join());
 
+				paras = Object.assign(paras, obj);
+
+				sql = concat(sql);
 				query(sql.join(" "), "update", callback);
 			},
 			"delete": (callback) => {
