@@ -17,6 +17,7 @@
  * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
  */
 const archive = require("./util/archive"); // 这里主要考虑归档处理可能被中途启动
+const STR_SELECT = "select", STR_ARRAY = "array";
 
 // 这个函数预读入数据库的配置信息
 const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
@@ -47,7 +48,7 @@ const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() =>
 })();
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
-const OPERTATING_METHODS = ["insert", "delete", "update", "select"
+const OPERTATING_METHODS = ["insert", "delete", "update", STR_SELECT
 	// TODO bluewater 暂时不支持所定义的 SQL 操作：
 	// trigger,
 	,"procedure"
@@ -96,7 +97,7 @@ async function queryFunction(queryName, paras, method, conn) {
 
 	try {
 		if (!stmt) sqlError("无法建立起目标数据库的连接。 ");
-		if (useCache && method === 'select') {
+		if (useCache && method === STR_SELECT) {
 			// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
 			let result = db.getCache(_sql, sqlPara);
 			if (result !== null) {
@@ -117,11 +118,11 @@ async function queryFunction(queryName, paras, method, conn) {
 		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
 
 		let result = await stmtMethod(sqlPara);
-		if (method === 'select') {
+		if (method === STR_SELECT) {
 			result = db.getRecordsList(result);
 		}
 
-		if (useCache && method === 'select') { // 把搜索到的结果集放到缓存中
+		if (useCache && method === STR_SELECT) { // 把搜索到的结果集放到缓存中
 			db.putCache(_sql, sqlPara, result, _timeout);
 		}
 
@@ -193,7 +194,7 @@ function bluewater() {
 						if (!ret) {
 							results[item.name] = result;
 						} else {
-							if (typeIs(ret, 'array')) {
+							if (typeIs(ret, STR_ARRAY)) {
 								results[item.name] = ret.concat(result);
 							} else {
 								results[item.name] = [ret];
@@ -224,7 +225,7 @@ function bluewater() {
 					if (!ret) {
 						results[item.name] = result;
 					} else {
-						if (typeIs(ret, 'array')) {
+						if (typeIs(ret, STR_ARRAY)) {
 							results[item.name] = ret.concat(result);
 						} else {
 							results[item.name] = [ret];
