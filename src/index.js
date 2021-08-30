@@ -154,7 +154,7 @@ async function queryFunction(queryName, paras, method, conn) {
  */
 function bluewater() {
 
-	const conn = db.connect(dbConnConfig);
+	let conn = db.connect(dbConnConfig);
 
 	async function closeConn() {
 		if (conn) {
