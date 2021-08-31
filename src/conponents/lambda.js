@@ -136,10 +136,10 @@ module.exports = exports = (bluewater) => {
 				});
 
 				sql.push("(" + columns.join() + ")");
-				sql.push(" VALUES ");
+				sql.push("VALUES");
 				sql.push(inserts.join());
 
-				query(sql.join(""), "insert", callback);
+				query(sql.join(" "), "insert", callback);
 			},
 			limit: (from, cnt) => {
 
