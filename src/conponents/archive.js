@@ -11,7 +11,7 @@
  * 归档类型（type）支持 json 格式，此参数可忽略，如果不写则默认 json
  * 归档间隔时间（interval）
  */
-const constants = require("coralian");
+const { constants } = require("coralian");
 module.exports = exports = {
 	init: (config) => {
 
