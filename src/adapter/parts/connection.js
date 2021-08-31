@@ -31,7 +31,7 @@ function statement(driver, sql) {
 		insert: execute,
 		update: execute,
 		delete: execute,
-		procedure: execute,
+		procedure: execute, // TODO 这种写法对不对不知道，待测试
 		close: Function.EMPTY_BODY
 	}
 }
