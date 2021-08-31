@@ -22,7 +22,7 @@ const STR_SELECT = "select", STR_ARRAY = "array";
 // 这个函数预读入数据库的配置信息
 const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
 
-	const { readFileSync, existsSync, fstat } = require("fs");
+	const { readFileSync, existsSync } = require("fs");
 	const STR_ON = "ON";
 
 	const def = existsSync(process.cwd() + "/res/json/sql.json") ?
