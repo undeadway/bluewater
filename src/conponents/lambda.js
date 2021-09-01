@@ -110,6 +110,7 @@ module.exports = exports = (bluewater) => {
 
 				let sql = [];
 				sql.push(`DELETE FROM ${tableName} `);
+				sql = concat(sql);
 
 				query(sql.join(" "), "delete", callback);
 			},
