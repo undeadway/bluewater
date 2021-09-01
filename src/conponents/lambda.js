@@ -12,8 +12,8 @@ module.exports = exports = (bluewater) => {
 	
 	return (tableName) => {
 
-		let wheres = [], exts = [], paras = {}; // 辅助条件
-		let distincts = null, isHaving = false;
+		let wheres = [], havings = [], exts = [], paras = {}; // 辅助条件
+		let distincts = null, onHaving = false;
 
 		function query(sql, method, callback) {
 
@@ -30,9 +30,19 @@ module.exports = exports = (bluewater) => {
 		}
 
 		function concat (sql) {
-			sql.push(isHaving? "HAVING" : "WHERE");
-			sql = sql.concat(wheres);
+			if (!Array.isEmpty(wheres)) {
+				sql.push("WHERE");
+				sql = sql.concat(wheres);
+			}
 			sql = sql.concat(exts);
+
+			if (onHaving) {
+				if (!Array.isEmpty(havings)) {
+					sql.push("HAVING");
+					sql = sql.concat(havings);
+				}
+			}
+
 			return sql;
 		}
 
@@ -162,7 +172,7 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			having: () => {
-				isHaving = true;
+				onHaving = true;
 			},
 			groupBy: (column) => {
 
@@ -182,35 +192,60 @@ module.exports = exports = (bluewater) => {
 			},
 			equal: (column, value) => {
 
-				wheres.push(`${column} = #[${column}]`);
+				if (!onHaving) {
+					wheres.push(`${column} = #[${column}]`);
+				} else {
+					havings.push(`${column} = #[${column}]`);
+				}
+
 				paras[column] = value;
 
 				return lambda;
 			},
 			notEqual: (column, value) => {
 
-				wheres.push(`${column} <> #[${column}]`);
+				if (!onHaving) {
+					wheres.push(`${column} <> #[${column}]`);
+				} else {
+					havings.push(`${column} <> #[${column}]`);
+				}
+
 				paras[column] = value;
 
 				return lambda;
 			},
 			overThan: (column, value) => {
 
-				wheres.push(`${column} > #[${column}]`);
+				if (!onHaving) {
+					wheres.push(`${column} > #[${column}]`);
+				} else {
+					havings.push(`${column} > #[${column}]`);
+				}
+				
 				paras[column] = value;
 
 				return lambda;
 			},
 			lessThan: (column, value) => {
 
-				wheres.push(`${column} < #[${column}]`);
+				if (!onHaving) {
+					wheres.push(`${column} < #[${column}]`);
+				} else {
+					havings.push(`${column} < #[${column}]`);
+				}
+
 				paras[column] = value;
 
 				return lambda;
 			},
 			between: (column, min, max) => {
 
-				wheres.push(`${column} BETWEEN #[${column}Min] AND #[${column}Max]`);
+				if (!onHaving) {
+					wheres.push(`${column} BETWEEN #[${column}Min] AND #[${column}Max]`);
+				} else {
+					havings.push(`${column} BETWEEN #[${column}Min] AND #[${column}Max]`);
+				}
+
 				paras[`${column}Min`] = min;
 				paras[`${column}Max`] = max;
 
@@ -222,7 +257,12 @@ module.exports = exports = (bluewater) => {
 
 				value = format.replace(new RegExp(column, "g"), value);
 
-				wheres.push(`${column} LIKE #[${column}]`);
+				if (!onHaving) {
+					wheres.push(`${column} LIKE #[${column}]`);
+				} else {
+					havings.push(`${column} LIKE #[${column}]`);
+				}
+
 				paras[column] = value;
 
 				return lambda;
