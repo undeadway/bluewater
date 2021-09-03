@@ -1,1 +1,22 @@
-{}
+{
+    "getByA": {
+        "method": "select",
+        "sql": "SELECT * FROM TEST WHERE A = #[a]",
+        "timeout": 0
+    },
+    "add": {
+        "method": "insert",
+        "sql": "INSERT INTO TEST (A, B, C) VALUES (#[a], #[b], #[c])",
+        "timeout": 0
+    },
+    "editByA": {
+        "method": "insert",
+        "sql": "UPDATE TEST SET B = #[b], C = #[c] WHERE A = #[a]",
+        "timeout": 0
+    },
+    "delByA": {
+        "method": "insert",
+        "sql": "DELETE FROM TEST WHERE A = #[a]",
+        "timeout": 0
+    }
+}
