@@ -50,9 +50,9 @@ const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() =>
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
 const OPERTATING_METHODS = ["insert", "delete", "update", STR_SELECT
 	// TODO bluewater 暂时不支持所定义的 SQL 操作：
-	// trigger,
+	// ,trigger
 	,"procedure"
-	// "function"
+	// ,"function"
 ];
 
 function sqlError(msg) {
