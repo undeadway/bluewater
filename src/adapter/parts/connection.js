@@ -1,33 +1,30 @@
-function connection(driver) {
-
-	async function run (sql, arg) {
-		driver.connect();
-		await driver.query(sql, arg);
-	}
+function connection(conn) {
 
     return {
 		begin: async () => {
-			await run("BEGIN");
+			conn.connect();
+			await conn.query("BEGIN");
 		},
 		commit: async () => {
-			await driver.query("COMMIT");
+			await conn.query("COMMIT");
 		},
 		rollback: async () => {
-			await driver.query("ROLLBACK");
+			await conn.query("ROLLBACK");
 		},
 		prepare: (sql) => {
-			return statement(run, sql);
+			return statement(conn, sql);
 		},
 		close: () => {
-			driver.end();
+			conn.end();
 		}
 	}
 }
 
-function statement(run, sql) {
+function statement(conn, sql) {
 
 	async function execute(arg) {
-		return await run(sql, arg);
+		conn.connect();
+		return await conn.query(sql, arg);
 	}
 
 	return {
@@ -35,7 +32,6 @@ function statement(run, sql) {
 		insert: execute,
 		update: execute,
 		delete: execute,
-		procedure: execute, // TODO 这种写法对不对不知道，待测试
 		close: Function.EMPTY_BODY
 	}
 }
