@@ -7,7 +7,7 @@ const pg = require("pg");
 const connection = require("./parts/connection");
 
 // connect
-function connect({ type, url, name, user, passwd, port }) {
+function connect({ type = "Client", url, name, user, passwd, port }) {
 
 	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
 		user     : user,

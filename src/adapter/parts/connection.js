@@ -1,9 +1,13 @@
 function connection(driver) {
 
+	function run (sql, arg) {
+		driver.connect();
+		await driver.query(sql, arg);
+	}
+
     return {
 		begin: async () => {
-			driver.connect();
-			await driver.query("BEGIN");
+			await run("BEGIN");
 		},
 		commit: async () => {
 			await driver.query("COMMIT");
@@ -12,7 +16,7 @@ function connection(driver) {
 			await driver.query("ROLLBACK");
 		},
 		prepare: (sql) => {
-			return statement(driver, sql);
+			return statement(run, sql);
 		},
 		close: () => {
 			driver.end();
@@ -20,10 +24,10 @@ function connection(driver) {
 	}
 }
 
-function statement(driver, sql) {
+function statement(run, sql) {
 
 	async function execute(arg) {
-		return await driver.query(sql, arg);
+		return run(sql, arg);
 	}
 
 	return {
