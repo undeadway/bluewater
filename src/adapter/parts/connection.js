@@ -27,7 +27,7 @@ function connection(driver) {
 function statement(run, sql) {
 
 	async function execute(arg) {
-		return run(sql, arg);
+		return await run(sql, arg);
 	}
 
 	return {
