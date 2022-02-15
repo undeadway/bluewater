@@ -1,0 +1,17 @@
+{
+	"database-name": "postgres",
+	"connection": {
+		"url": "http://127.0.0.1",
+		"port": "54321",
+		"name": "mytest",
+		"user": "postgres",
+		"passwd": "postgres"
+	},
+	"method-query":"ON",
+	"use-cache": "ON",
+	"archive": {
+		"dir": "./archive/",
+		"type": "json",
+		"interval": ""
+	}
+}
