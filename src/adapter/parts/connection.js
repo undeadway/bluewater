@@ -1,6 +1,6 @@
 function connection(driver) {
 
-	function run (sql, arg) {
+	async function run (sql, arg) {
 		driver.connect();
 		await driver.query(sql, arg);
 	}
