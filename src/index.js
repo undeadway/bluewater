@@ -118,11 +118,11 @@ async function queryFunction(queryName, paras, method, conn) {
 		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
 
 		let result = await stmtMethod(sqlPara);
-		if (method === STR_SELECT) {
+		if (_method === STR_SELECT) {
 			result = db.getRecordsList(result);
 		}
 
-		if (useCache && method === STR_SELECT) { // 把搜索到的结果集放到缓存中
+		if (useCache && _method === STR_SELECT) { // 把搜索到的结果集放到缓存中
 			db.putCache(_sql, sqlPara, result, _timeout);
 		}
 
