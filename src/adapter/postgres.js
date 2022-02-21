@@ -6,8 +6,10 @@
 const pg = require("pg");
 const connection = require("./parts/connection");
 
+const Client = "Client", Pool = "Pool", Result = "Result";
+
 // connect
-function connect({ type = "Client", url, name, user, passwd, port }) {
+function connect({ type = Client, url, name, user, passwd, port }) {
 
 	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
 		user     : user,
@@ -29,9 +31,7 @@ db.getDBSize = function () {
 };
 
 const type = {
-    Client: "Client",
-    Pool: "Pool",
-    Result: "Result"
+    Client, Pool, Result
 };
 
 db.type = new Proxy(type, {
