@@ -9,14 +9,28 @@ const connection = require("./parts/connection");
 const Client = "Client", Pool = "Pool", Result = "Result";
 
 // connect
-function connect({ type = Client, url, name, user, passwd, port }) {
+function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = {},
+	max, idle, maxUses, // pool
+	connStr, types, appName // client
+	}) {
 
 	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
-		user     : user,
-		host     : url,
-		database : name,
-		password : passwd,
-		port     : port
+		user                                : user,
+		host                                : url,
+		database                            : name,
+		password                            : passwd,
+		port                                : port,
+        ssl                                 : ssl,
+        connectionTimeoutMillis             : timeout.connection,
+        max                                 : max,
+        idleTimeoutMillis                   : idle,
+        maxUses                             : maxUses,
+        connectionString                    : connStr,
+        types                               : types,
+		statement_timeout                   : timeout.statement,
+		query_timeout                       : timeout.query,
+		application_name                    : appName,
+		idle_in_transaction_session_timeout : timeout.idleTransaction
 	});
 
 	return connection(client);
