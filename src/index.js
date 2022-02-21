@@ -166,7 +166,7 @@ function bluewater() {
 	async function runQueryFunction(queryName, arg) {
 		try {
 			let result = await queryFunction(queryName, arg.condition, arg.method, conn);
-			arg.success(result);
+			if (arg.success) arg.success(result);
 		} catch (e) {
 			Coralian.logger.err(e);
 			if (arg.failed) {
@@ -233,8 +233,10 @@ function bluewater() {
 						}
 					}
 				}
+				// 因为没有开启事务，所以不用执行提交
 				if (success) success(results);
 			} catch (e) {
+				// 因为没有开启事务，所以不用进行回滚
 				Coralian.logger.err(e);
 				e.code = 500;
 				if (failed) failed(e);
@@ -244,6 +246,7 @@ function bluewater() {
 		}
 	};
 
+	// 将指定方法绑定到主对象上
 	if (methodQuery) {
 		for (let queryName in BLUEWATER_DEFS) {
 
