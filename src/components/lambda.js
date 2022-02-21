@@ -5,7 +5,8 @@
  * 支持的操作
  * =
  */
- const typeMapping = require("../util/type-mapping");
+const { Mark } = require("mircore").constants;
+const typeMapping = require("../util/type-mapping");
 const { errorCast } = Error;
 
 module.exports = exports = (bluewater) => {
@@ -79,20 +80,23 @@ module.exports = exports = (bluewater) => {
 			// },
 			select: (columns, callback) => {
 
-				if (!Array.isArray(columns)) errorCast(columns, Array);
+				let columnsName, sql = [];
+				if (columns === Mark.ASTERISK) {
+					columnsName = columns;
+				} else {
+					if (!Array.isArray(columns)) errorCast(columns, Array);
 
-				if (distincts) {
-					columns = columns.map((column) => {
-						if (distincts.has(column)) {
-							return `DISTINCT ${column}`;
-						} else {
-							return column;
-						}
-					});
+					if (distincts) {
+						columns = columns.map((column) => {
+							if (distincts.has(column)) {
+								return `DISTINCT ${column}`;
+							} else {
+								return column;
+							}
+						});
+					}
+					columnsName = columns.join();
 				}
-
-				let columnsName = columns.join();
-				let sql = [];
 
 				sql.push(`SELECT ${columnsName} FROM ${tableName}`);
 
