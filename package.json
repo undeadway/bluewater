@@ -9,7 +9,7 @@
     "url": "git+https://gitee.com/undeadway/bluewater.git"
   },
   "dependencies": {
-    "coralian": "0.0.26",
+    "coralian": "git+https://gitee.com/undeadway/coralian#dev",
     "md5": "^2.3.0"
   },
   "devDependencies": {
