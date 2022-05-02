@@ -5,7 +5,7 @@
  * 支持的操作
  * =
  */
-const { Mark } = require("mircore").constants;
+const { Mark } = require("coralian").constants;
 const typeMapping = require("../util/type-mapping");
 const { errorCast } = Error;
 
