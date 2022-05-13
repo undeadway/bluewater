@@ -1,8 +1,8 @@
 {
 	"database-name": "postgres",
 	"connection": {
-		"url": "http://127.0.0.1",
-		"port": "54321",
+		"url": "127.0.0.1",
+		"port": "5432",
 		"name": "mytest",
 		"user": "postgres",
 		"passwd": "postgres"
