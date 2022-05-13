@@ -121,7 +121,7 @@ module.exports = (getPrepareMark) => {
 			let paras = sqlArgs.from;
 			if (paras) {
 				let conditions = sqlArgs.condition;
-				if (conditions) {
+				if (conditions) { // 这里预处理 sql 定义中的各种条件判断
 					Object.forEach(conditions, (key, value) => {
 						switch (typeOf(value)) {
 							case "string":
