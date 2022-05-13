@@ -1,8 +1,16 @@
 function connection(conn) {
 
+	let isConnected = false;
+
+	function connect () {
+		if (isConnected) return;
+		conn.connect();
+		isConnected = true;
+	}
+
     return {
 		begin: async () => {
-			conn.connect();
+			connect();
 			await conn.query("BEGIN");
 		},
 		commit: async () => {
@@ -12,7 +20,7 @@ function connection(conn) {
 			await conn.query("ROLLBACK");
 		},
 		prepare: (sql) => {
-			return statement(conn, sql);
+			return statement(connect, conn, sql);
 		},
 		close: () => {
 			conn.end();
@@ -20,10 +28,10 @@ function connection(conn) {
 	}
 }
 
-function statement(conn, sql) {
+function statement(connect, conn, sql) {
 
 	async function execute(arg) {
-		conn.connect();
+		connect();
 		return await conn.query(sql, arg);
 	}
 

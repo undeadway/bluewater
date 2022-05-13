@@ -14,7 +14,7 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 	connStr, types, appName // client
 	}) {
 
-	const client = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
+	const db = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
 		user                                : user,
 		host                                : url,
 		database                            : name,
@@ -33,7 +33,7 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 		idle_in_transaction_session_timeout : timeout.idleTransaction
 	});
 
-	return connection(client);
+	return connection(db);
 };
 
 const db = require("./parts/base")((paras) => {

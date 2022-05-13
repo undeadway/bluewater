@@ -1,12 +1,28 @@
 require("coralian");
 const bluewater = require("../src/index");
 
+const condition = {
+    test: "abc"
+}
+
+const queue = [{
+    name: "testLike",
+    condition
+}]
+
+// bluewater().transaction(
+//     queue,
+//     (res) => {
+//         console.log(res);
+//     }
+// );
 
 bluewater().testLike({
-    condition: {
-        test: "abc"
-    },
+    condition,
     success: (res) => {
-        console.log(res[0].rows);
+        console.log(res);
+    },
+    fail: (err) => {
+        console.log(err);
     }
 });

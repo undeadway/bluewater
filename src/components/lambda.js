@@ -25,6 +25,7 @@ module.exports = exports = (bluewater) => {
 				condition: {
 					from: paras
 				},
+				typeName: "Lambda",
 				success: callback,
 				method: method
 			});

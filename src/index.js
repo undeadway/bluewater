@@ -48,7 +48,7 @@ const [BW_SQL_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
 })();
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
-const OPERTATING_METHODS = ["insert", "delete", "update", STR_SELECT
+const VALID_METHODS = ["insert", "delete", "update", STR_SELECT
 	// TODO bluewater 暂时不支持所定义的 SQL 操作：
 	// ,trigger
 	,"procedure"
@@ -59,7 +59,7 @@ function sqlError(msg) {
 	throw new Error(msg || "SQL 错误");
 }
 
-async function queryFunction(queryName, paras, method, conn) {
+async function queryFunction({queryName, paras, method, typeName }, conn) {
 
 	let __sql, sqlArgs, _method, _timeout = 0;
 	
@@ -70,8 +70,6 @@ async function queryFunction(queryName, paras, method, conn) {
 		_timeout = timtout = timeout || 0;
 		_method = String.trim(method.toLowerCase());
 
-		if (!Array.has(OPERTATING_METHODS, _method)) sqlError(`bluewater 暂时不支持 ${_method} 。`);
-
 		sqlArgs = {
 			from: paras,
 			condition: condition
@@ -79,10 +77,12 @@ async function queryFunction(queryName, paras, method, conn) {
 		
 	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
 		__sql = queryName;
-		queryName = `Lamdba ${method}`;
+		queryName = `${typeName} ${method}`;
 		sqlArgs = paras;
 		_method = method;
 	}
+
+	if (!Array.has(VALID_METHODS, _method)) sqlError(`bluewater 暂时不支持 ${_method} 。`);
 
 	let [_sql, sqlPara] = db.compire(__sql, sqlArgs);
 
@@ -165,7 +165,9 @@ function bluewater() {
 
 	async function runQueryFunction(queryName, arg) {
 		try {
-			let result = await queryFunction(queryName, arg.condition, arg.method, conn);
+			let result = await queryFunction( 
+				{ queryName, paras: arg.condition, method: arg.method, typeName: arg.typeName }, 
+				conn);
 			if (arg.success) arg.success(result);
 		} catch (e) {
 			Coralian.logger.err(e);
@@ -188,8 +190,10 @@ function bluewater() {
 				await conn.begin();
 				let results = {};
 				while ((item = queue.shift()) !== undefined) {
-					let result = await queryFunction(item.name, item.condition, conn);
+					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
 					if (item.success) {
+						item.success(result);
+					} else { // 在没有对每个处理都定义 success 的时候，将所有返回值都放到最后统一处理
 						let ret = results[item.name];
 						if (!ret) {
 							results[item.name] = result;
@@ -201,14 +205,13 @@ function bluewater() {
 								results[item.name].push(result);
 							}
 						}
-						item.success(result);
 					}
 				}
 				await conn.commit();
 				if (success) success(results);
 			} catch (e) {
-				await conn.rollback();
 				Coralian.logger.err(e);
+				await conn.rollback();
 				e.code = 500;
 				if (failed) failed(e);
 			} finally {
@@ -220,7 +223,7 @@ function bluewater() {
 			try {
 				let results = {};
 				while ((item = queue.shift()) !== undefined) {
-					let result = await queryFunction(item.name, item.condition, conn);
+					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
 					let ret = results[item.name];
 					if (!ret) {
 						results[item.name] = result;
