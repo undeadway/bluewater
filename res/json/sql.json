@@ -18,5 +18,9 @@
         "method": "insert",
         "sql": "DELETE FROM TEST WHERE A = #[a]",
         "timeout": 0
+    },
+    "testLike": {
+        "method": "select",
+        "sql": "SELECT * FROM newtable where column1 like ![%test%]"
     }
 }

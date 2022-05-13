@@ -8,7 +8,7 @@ const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
 // bluewater 对象区分符号常量
-const BW_PARAS_START = "#[", BW_CDTION_START = "?[", BLUEWATER_END = "]";
+const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![", BW_TAG_END = "]";
 function sqlError(msg) {
 	throw new Error(msg);
 }
@@ -33,14 +33,14 @@ module.exports = (getPrepareMark) => {
 		}
 
 		let para = [];
-		while (String.contains(sql, BW_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
-			let start = sql.indexOf(BW_PARAS_START) + 2,
-				end = sql.indexOf(BLUEWATER_END);
+		while (String.contains(sql, BW_TAG_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
+			let start = sql.indexOf(BW_TAG_PARAS_START) + 2,
+				end = sql.indexOf(BW_TAG_END);
 			let name = sql.slice(start, end);
 
 			// 2 将变量装配到数组中
 			// 3 修改 sql
-			let tagName = `${BW_PARAS_START}${name}${BLUEWATER_END}`;
+			let tagName = `${BW_TAG_PARAS_START}${name}${BW_TAG_END}`;
 			let value = paras[name];
 			if (typeIs(value, "array")) {
 				let append = `, ${tagName}`;
@@ -56,6 +56,23 @@ module.exports = (getPrepareMark) => {
 				sql = pushSqlValue(para, value, sql, tagName);
 			}
 		}
+
+		while(String.contains(sql, BW_TAG_LIKE_START)) {
+			let start = sql.indexOf(BW_TAG_LIKE_START) + 2,
+			end = sql.indexOf(BW_TAG_END);
+			let name = sql.slice(start, end); // 获得包括 % 在内的所有标签
+			let realName = name.replace(/%/g, ""); // 去 %
+
+			let tagName = `${BW_TAG_LIKE_START}${name}${BW_TAG_END}`;
+			let value = paras[realName];
+			paras[realName] = value = name.replace(realName, value);
+
+			if (value === undefined || value === null) {
+				sqlError("SQL 参数 " + name + " 为 " + value);
+			}
+			sql = pushSqlValue(para, value, sql, tagName);
+		}
+
 		return [sql, para]; // 4 返回 SQL
 	}
 
@@ -72,9 +89,9 @@ module.exports = (getPrepareMark) => {
 
 		let condition = paras[key];
 		if (!!condition && condition()) { // 当有这个判断函数以及这个判断函数的返回值为真
-			input = input.replace(BW_CDTION_START + argKey + BLUEWATER_END, value);
+			input = input.replace(BW_TAG_CDTION_START + argKey + BW_TAG_END, value);
 		} else {
-			input = input.replace(BW_CDTION_START + argKey + BLUEWATER_END, String.BLANK);
+			input = input.replace(BW_TAG_CDTION_START + argKey + BW_TAG_END, String.BLANK);
 		}
 		return input;
 	}
