@@ -20,7 +20,7 @@ const archive = require("./util/archive"); // 这里主要考虑归档处理可�
 const STR_SELECT = "select", STR_ARRAY = "array";
 
 // 这个函数预读入数据库的配置信息
-const [BLUEWATER_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
+const [BW_SQL_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
 
 	const { readFileSync, existsSync } = require("fs");
 	const STR_ON = "ON";
@@ -63,8 +63,8 @@ async function queryFunction(queryName, paras, method, conn) {
 
 	let __sql, sqlArgs, _method, _timeout = 0;
 	
-	if (BLUEWATER_DEFS[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
-		let { method, sql, timeout, condition } = BLUEWATER_DEFS[queryName];
+	if (BW_SQL_DEFS[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
+		let { method, sql, timeout, condition } = BW_SQL_DEFS[queryName];
 
 		__sql = sql;
 		_timeout = timtout = timeout || 0;
@@ -77,7 +77,7 @@ async function queryFunction(queryName, paras, method, conn) {
 			condition: condition
 		};
 		
-	} else { // 如果 BLUEWATER_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
+	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
 		__sql = queryName;
 		queryName = `Lamdba ${method}`;
 		sqlArgs = paras;
@@ -248,7 +248,7 @@ function bluewater() {
 
 	// 将指定方法绑定到主对象上
 	if (methodQuery) {
-		for (let queryName in BLUEWATER_DEFS) {
+		for (let queryName in BW_SQL_DEFS) {
 
 			bwObj[queryName] = async (arg) => {
 				await runQueryFunction(queryName, arg);
