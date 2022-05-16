@@ -4,3 +4,4 @@ db
 yarn.lock
 package-lock.json
 yarn.lock
+res/json/bluewater.json
