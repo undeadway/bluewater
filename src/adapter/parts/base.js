@@ -4,11 +4,14 @@
  */
 
 const selectCache = require("./../../util/select-cache");
+const { getFunctionName } = require("./../../util/utils");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
 // bluewater 对象区分符号常量
-const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![", BW_TAG_END = "]";
+const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![",
+	BW_FUNCTION_START = "&[", BW_TAG_END = "]";
+
 function sqlError(msg) {
 	throw new Error(msg);
 }
@@ -71,6 +74,18 @@ module.exports = (getPrepareMark) => {
 				sqlError("SQL 参数 " + name + " 为 " + value);
 			}
 			sql = pushSqlValue(para, value, sql, tagName);
+		}
+
+		while(String.contains(sql, BW_FUNCTION_START)) { // 
+
+		let start = sql.indexOf(BW_FUNCTION_START) + 2,
+				end = sql.indexOf(BW_TAG_END);
+			let name = sql.slice(start, end); // 函数名
+
+			let tagName = `${BW_FUNCTION_START}${name}${BW_TAG_END}`;
+			let value = getFunctionName(name) + paras[name];
+
+			sql = sql.replace(tagName, value);
 		}
 
 		return [sql, para]; // 4 返回 SQL

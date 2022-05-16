@@ -21,6 +21,8 @@
     },
     "testLike": {
         "method": "select",
-        "sql": "SELECT * FROM newtable where column1 like ![%test%]"
+        "sql": "SELECT * FROM newtable where column1 like ![%test%] &[orderBy]",
+        "condition": {
+        }
     }
 }

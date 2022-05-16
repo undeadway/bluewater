@@ -6,7 +6,7 @@
  * =
  */
 const { Mark } = Coralian.constants;
-const typeMapping = require("../util/type-mapping");
+const { TypeMap } = require("../util/utils");
 const { errorCast } = Error;
 
 module.exports = exports = (bluewater) => {
@@ -142,7 +142,7 @@ module.exports = exports = (bluewater) => {
 						if (!columnFilled) {
 							columns.push(key);
 						}
-						let value = typeMapping.format(obj.value, obj.type);
+						let value = TypeMap.format(obj.value, obj.type);
 						insertData.push(value);
 					}
 
