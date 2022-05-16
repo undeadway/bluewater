@@ -221,6 +221,7 @@ function bluewater() {
 		// 专门用于无需开启事物且无中间操作的多条sql的 有序执行
 		execute: async (queue, success, failed) => {
 			try {
+				let conn = db.connect(dbConnConfig);
 				let results = {};
 				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
