@@ -4,13 +4,19 @@ function getFunctionName(name) {
     return funcsMap[name];
 }
 
+function sqlError(msg) {
+	throw new Error(msg);
+}
+
 /**
  * 1. 数字
  * 2. 大小写字母
  * 3. 下划线、中划线
  */
 function chkTagName (name) {
-    return /^([0-9a-zA-Z_\-]+)$/.test(name);
+    if (!/^([0-9a-zA-Z_\-]+)$/.test(name)) {
+        sqlError(`无法解析 ${name}`);
+    }
 }
 
 TypeMap = {
@@ -34,5 +40,6 @@ TypeMap = {
 module.exports = {
     getFunctionName,
     chkTagName,
+    sqlError,
     TypeMap
 };

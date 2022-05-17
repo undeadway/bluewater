@@ -4,7 +4,7 @@
  */
 
 const selectCache = require("./../../util/select-cache");
-const { getFunctionName, chkTagName } = require("./../../util/utils");
+const { getFunctionName, chkTagName, sqlError } = require("./../../util/utils");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
@@ -14,11 +14,7 @@ const UNDERBAR = "_";
 
 // bluewater 对象区分符号常量
 const BW_TAG_CDTION_START = "?[", BW_TAG_END = "]";
-const BW_TAG_REGX = /#\[(.+)\]/, BW_LIKE_REGX = /!\[(.+)\]/, BW_FUNCTION_REGX = /&\[(.+)\]/;
-
-function sqlError(msg) {
-	throw new Error(msg);
-}
+const BW_TAG_REGX = /#\[(.+?)\]/, BW_LIKE_REGX = /!\[(.+?)\]/, BW_FUNCTION_REGX = /&\[(.+?)\]/;
 
 module.exports = (getPrepareMark) => {
 
