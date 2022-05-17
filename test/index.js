@@ -3,6 +3,7 @@ const bluewater = require("../src/index");
 
 const condition = {
     test: "abc",
+    c2: "111",
     orderBy: "column1 DESC, column2 ASC"
 }
 

@@ -4,18 +4,20 @@
  */
 
 const selectCache = require("./../../util/select-cache");
-const { getFunctionName } = require("./../../util/utils");
+const { getFunctionName, chkTagName } = require("./../../util/utils");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
 const UNDERBAR = "_";
+
+// const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![",
+// 	BW_FUNCTION_START = "&[", BW_TAG_END = "]";
+
 // bluewater 对象区分符号常量
-const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![",
-	BW_FUNCTION_START = "&[", BW_TAG_END = "]";
+const BW_TAG_REGX = /#\[(.+)\]/, BW_LIKE_REGX = /!\[(.+)\]/, BW_FUNCTION_REGX = /&\[(.+)\]/;
 
 function sqlError(msg) {
 	throw new Error(msg);
 }
-
 
 module.exports = (getPrepareMark) => {
 
@@ -35,16 +37,33 @@ module.exports = (getPrepareMark) => {
 			return [sql, paras];
 		}
 
+		// while(String.contains(sql, BW_FUNCTION_START)) {
+		while (BW_FUNCTION_REGX.test(sql)) {
+
+			let regx = sql.match(BW_FUNCTION_REGX);
+			let tagName = regx[0], name = regx[1]; // TODO 因为还么想好 name 的控制是什么，所以暂时就不做内容限制
+
+			chkTagName(name);
+			let value = getFunctionName(name) + paras[name];
+	
+			sql = sql.replace(tagName, value);
+		}
+
 		let para = [];
-		while (String.contains(sql, BW_TAG_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
-			let start = sql.indexOf(BW_TAG_PARAS_START) + 2,
-				end = sql.indexOf(BW_TAG_END);
-			let name = sql.slice(start, end);
+		// while (String.contains(sql, BW_TAG_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
+		while (BW_TAG_REGX.test(sql)) {
+			// let start = sql.indexOf(BW_TAG_PARAS_START) + 2,
+			// 	end = sql.indexOf(BW_TAG_END);
+			// let name = sql.slice(start, end);
 
 			// 2 将变量装配到数组中
-			// 3 修改 sql
-			let tagName = `${BW_TAG_PARAS_START}${name}${BW_TAG_END}`;
+			let regx = sql.match(BW_TAG_REGX);
+			let tagName = regx[0], name = regx[1];
+
+			chkTagName(name);
 			let value = paras[name];
+
+			// 3 修改 sql
 			if (typeIs(value, "array")) {
 				let append = `, ${tagName}`;
 				for (let i = 0, len = value.length - 1; i < len; i++) {
@@ -60,32 +79,26 @@ module.exports = (getPrepareMark) => {
 			}
 		}
 
-		while(String.contains(sql, BW_TAG_LIKE_START)) {
-			let start = sql.indexOf(BW_TAG_LIKE_START) + 2,
-			end = sql.indexOf(BW_TAG_END);
-			let name = sql.slice(start, end); // 获得包括 % 在内的所有标签
+		// while(String.contains(sql, BW_TAG_LIKE_START)) {
+		// 	let start = sql.indexOf(BW_TAG_LIKE_START) + 2,
+		// 	end = sql.indexOf(BW_TAG_END);
+		// 	let name = sql.slice(start, end);
+
+		while (BW_LIKE_REGX.test(sql)) {
+
+			let regx = sql.match(BW_LIKE_REGX);
+			let tagName = regx[0], name = regx[1];  // name 包括 % 在内的所有标签内容
 			let realName = name.replace(/%/g, ""); // 去 %
 
-			let tagName = `${BW_TAG_LIKE_START}${name}${BW_TAG_END}`;
+			chkTagName(realName);
 			let value = paras[realName];
+
 			paras[realName] = value = name.replace(realName, value);
 
 			if (value === undefined || value === null) {
 				sqlError("SQL 参数 " + name + " 为 " + value);
 			}
 			sql = pushSqlValue(para, value, sql, tagName);
-		}
-
-		while(String.contains(sql, BW_FUNCTION_START)) { // 
-
-		let start = sql.indexOf(BW_FUNCTION_START) + 2,
-				end = sql.indexOf(BW_TAG_END);
-			let name = sql.slice(start, end); // 函数名
-
-			let tagName = `${BW_FUNCTION_START}${name}${BW_TAG_END}`;
-			let value = getFunctionName(name) + paras[name];
-
-			sql = sql.replace(tagName, value);
 		}
 
 		return [sql, para]; // 4 返回 SQL

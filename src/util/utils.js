@@ -4,6 +4,15 @@ function getFunctionName(name) {
     return funcsMap[name];
 }
 
+/**
+ * 1. 数字
+ * 2. 大小写字母
+ * 3. 下划线、中划线
+ */
+function chkTagName (name) {
+    return /^([0-9a-zA-Z_\-]+)$/.test(name);
+}
+
 TypeMap = {
     check: () => {
 
@@ -24,5 +33,6 @@ TypeMap = {
 
 module.exports = {
     getFunctionName,
+    chkTagName,
     TypeMap
 };
