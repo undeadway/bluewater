@@ -13,6 +13,7 @@ const UNDERBAR = "_";
 // 	BW_FUNCTION_START = "&[", BW_TAG_END = "]";
 
 // bluewater 对象区分符号常量
+const BW_TAG_CDTION_START = "?[", BW_TAG_END = "]";
 const BW_TAG_REGX = /#\[(.+)\]/, BW_LIKE_REGX = /!\[(.+)\]/, BW_FUNCTION_REGX = /&\[(.+)\]/;
 
 function sqlError(msg) {
