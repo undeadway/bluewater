@@ -66,8 +66,16 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 	if (BW_SQL_DEFS[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
 		let { method, sql, timeout, condition } = BW_SQL_DEFS[queryName];
 
+		if (!method) { // 检查各种定义
+			sqlError(`sql.json 中 ${queryName} 没有定义 method`);
+		}
+		if (!sql) { // 检查各种定义
+			sqlError(`sql.json 中 ${queryName} 没有定义 sql`);
+		}
+
 		__sql = sql;
 		_timeout = timtout = timeout || 0;
+
 		_method = String.trim(method.toLowerCase());
 
 		sqlArgs = {
@@ -75,7 +83,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 			condition: condition
 		};
 		
-	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql
+	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql，而不管其是否真的是一条 sql
 		__sql = queryName;
 		queryName = `${typeName} ${method}`;
 		sqlArgs = paras;
