@@ -9,6 +9,7 @@ const condition = {
 
 const queue = [{
     name: "testLike",
+    alias: "test",
     condition
 }]
 

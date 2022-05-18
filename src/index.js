@@ -194,15 +194,16 @@ function bluewater() {
 					if (item.success) {
 						item.success(result);
 					} else { // 在没有对每个处理都定义 success 的时候，将所有返回值都放到最后统一处理
-						let ret = results[item.name];
+						let alias = item.alias || item.name;
+						let ret = results[alias];
 						if (!ret) {
-							results[item.name] = result;
+							results[alias] = result;
 						} else {
 							if (typeIs(ret, STR_ARRAY)) {
-								results[item.name] = ret.concat(result);
+								results[alias] = ret.concat(result);
 							} else {
-								results[item.name] = [ret];
-								results[item.name].push(result);
+								results[alias] = [ret];
+								results[alias].push(result);
 							}
 						}
 					}
@@ -225,15 +226,16 @@ function bluewater() {
 				let results = {};
 				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
-					let ret = results[item.name];
+					let alias = item.alias || item.name;
+					let ret = results[alias];
 					if (!ret) {
-						results[item.name] = result;
+						results[alias] = result;
 					} else {
 						if (typeIs(ret, STR_ARRAY)) {
-							results[item.name] = ret.concat(result);
+							results[alias] = ret.concat(result);
 						} else {
-							results[item.name] = [ret];
-							results[item.name].push(result);
+							results[alias] = [ret];
+							results[alias].push(result);
 						}
 					}
 				}
