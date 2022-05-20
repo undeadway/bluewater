@@ -197,6 +197,7 @@ function bluewater() {
 			try {
 				await conn.begin();
 				let results = {};
+				let item = null;
 				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
 					if (item.success) {
@@ -232,6 +233,7 @@ function bluewater() {
 			try {
 				let conn = db.connect(dbConnConfig);
 				let results = {};
+				let item = null;
 				while ((item = queue.shift()) !== undefined) {
 					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
 					let alias = item.alias || item.name;
