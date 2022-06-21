@@ -238,14 +238,18 @@ function bluewater() {
 					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
 					let alias = item.alias || item.name;
 					let ret = results[alias];
-					if (!ret) {
-						results[alias] = result;
-					} else {
-						if (typeIs(ret, STR_ARRAY)) {
-							results[alias] = ret.concat(result);
+					if (item.success) {
+						item.success(result);
+					} else { // 在没有对每个处理都定义 success 的时候，将所有返回值都放到最后统一处理
+						if (!ret) {
+							results[alias] = result;
 						} else {
-							results[alias] = [ret];
-							results[alias].push(result);
+							if (typeIs(ret, STR_ARRAY)) {
+								results[alias] = ret.concat(result);
+							} else {
+								results[alias] = [ret];
+								results[alias].push(result);
+							}
 						}
 					}
 				}
