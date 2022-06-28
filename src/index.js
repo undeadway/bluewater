@@ -135,6 +135,9 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 		}
 
 		return result;
+	} catch (e) {
+		Coralian.logger.err(e);
+		throw e;
 	} finally {
 		await closeStmt();
 	}
@@ -231,7 +234,6 @@ function bluewater() {
 		// 专门用于无需开启事物且无中间操作的多条sql的 有序执行
 		execute: async (queue, success, failed) => {
 			try {
-				let conn = db.connect(dbConnConfig);
 				let results = {};
 				let item = null;
 				while ((item = queue.shift()) !== undefined) {
