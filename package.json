@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "coralian": "git+https://gitee.com/undeadway/coralian#dev",
+    "jsconst": "git+https://gitee.com/undeadway/jsconst#dev",
     "md5": "^2.3.0"
   },
   "devDependencies": {
