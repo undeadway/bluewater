@@ -5,7 +5,7 @@
  * 支持的操作
  * =
  */
-const { Mark } = Coralian.constants;
+const { Mark } = JsConst;
 const { TypeMap } = require("../util/utils");
 const { errorCast } = Error;
 
