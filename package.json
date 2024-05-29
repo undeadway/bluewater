@@ -1,6 +1,6 @@
 {
   "name": "bluewater",
-  "version": "0.0.24",
+  "version": "0.0.26",
   "main": "./src/index.js",
   "license": "Apache-2.0",
   "repository": {
@@ -21,7 +21,7 @@
     "build": " test/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "description": "A Node.js-based database interface adapter, an database-agnostic interface library, designed to bridge the usage discrepancies caused by diverse database driver syntaxes.",
+  "description": "A Node.js based database interface adapter, an database-agnostic interface library, designed to bridge the usage discrepancies caused by diverse database driver syntaxes.",
   "bugs": {
     "url": "https://gitee.com/undeadway/bluewater/issues"
   },

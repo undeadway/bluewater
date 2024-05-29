@@ -169,8 +169,8 @@ Apache-2.0
 
 # English
 
-This is a database driver adapter for nodejs.  
-The common interface without any database used, the program could coding one time.   
+This is a Node.js based database interface adapter, an database-agnostic interface library,   
+designed to bridge the usage discrepancies caused by diverse database driver syntaxes.".
 
 ```
 let bluewater = require("bluewater");
