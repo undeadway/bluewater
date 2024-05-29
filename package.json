@@ -1,7 +1,6 @@
 {
   "name": "bluewater",
   "version": "0.0.24",
-  "discription": "A common interface for adapt drivers of database.",
   "main": "./src/index.js",
   "license": "Apache-2.0",
   "repository": {
@@ -22,11 +21,11 @@
     "build": " test/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "description": "一个基于 Node.js的数据库接口适配器，与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异",
+  "description": "A Node.js-based database interface adapter, an database-agnostic interface library, designed to bridge the usage discrepancies caused by diverse database driver syntaxes.",
   "bugs": {
     "url": "https://gitee.com/undeadway/bluewater/issues"
   },
-  "homepage": "http://prj.waygc.net/?bluewater",
+  "homepage": "http://codes.waygc.net/projects?bluewater",
   "directories": {
     "test": "test"
   },
