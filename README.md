@@ -1,6 +1,10 @@
 # Chinese
 一个基于 Node.js 的数据库接口适配器。  
-与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异。  
+与数据库无关的接口库，用于弥合各种不同的数据库驱动的语法造成的使用差异。
+
+因为 nodejs 中的各种数据库驱动的语法不完全一致，操作逻辑也大相径庭，所以 bluewater 只是构筑出了一个中间层，可以弥合各个数据库调用间的差异。  
+可以使用统一的形式来调用各种不同的数据库驱动.
+
 使用的时候只要：
 
 ```
@@ -172,6 +176,12 @@ Apache-2.0
 This is a Node.js based database interface adapter, an database-agnostic interface library,   
 designed to bridge the usage discrepancies caused by diverse database driver syntaxes.".
 
+Due to the inconsistent syntax and vastly different operational logic among various database drivers in Node.js,  
+Bluewater serves as a middleware layer that reconciles the disparities between different database calls.  
+It enables the use of a unified approach to invoke a multitude of diverse database drivers.
+
+Used like:
+
 ```
 let bluewater = require("bluewater");
 let db = bluewater();
@@ -183,7 +193,11 @@ db.getList({
 ```
 
 ## About
-Bluewater is an adapter of db drivers, it is not contains any db driver.  
+
+Bluewater is not the driver of any database drivers, it is not contains any database driver.  
+It is only a 
+
+
 Supported db driver list is :
 
 | Name | URL |
