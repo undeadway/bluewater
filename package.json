@@ -5,11 +5,11 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://gitee.com/undeadway/bluewater.git"
+    "url": "git+https://github.com/undeadway/bluewater.git"
   },
   "dependencies": {
-    "coralian": "git+https://gitee.com/undeadway/coralian#dev",
-    "jsconst": "git+https://gitee.com/undeadway/jsconst#dev",
+    "coralian": "0.0.30",
+    "jsconst": "0.0.3",
     "md5": "^2.3.0"
   },
   "devDependencies": {
@@ -23,7 +23,7 @@
   },
   "description": "A Node.js based database interface adapter, an database-agnostic interface library, designed to bridge the usage discrepancies caused by diverse database driver syntaxes.",
   "bugs": {
-    "url": "https://gitee.com/undeadway/bluewater/issues"
+    "url": "https://github.com/undeadway/bluewater/issues"
   },
   "homepage": "http://codes.waygc.net/projects?bluewater",
   "directories": {
