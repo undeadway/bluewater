@@ -183,7 +183,7 @@ function bluewater() {
 		} catch (e) {
 			Coralian.logger.err(e);
 			if (arg.failed) {
-				arg.fail();
+				arg.failed();
 			}
 		} finally {
 			await closeConn();
