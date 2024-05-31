@@ -7,7 +7,7 @@ const selectCache = require("./../../util/select-cache");
 const { getFunctionName, chkTagName, sqlError } = require("./../../util/utils");
 const isArray = Array.isArray;
 const firstToUpperCase = Coralian.util.StringUtil.firstToUpperCase;
-const UNDERBAR = "_";
+const { Char } = JsConst;
 
 // const BW_TAG_PARAS_START = "#[", BW_TAG_CDTION_START = "?[", BW_TAG_LIKE_START = "![",
 // 	BW_FUNCTION_START = "&[", BW_TAG_END = "]";
@@ -126,8 +126,8 @@ module.exports = (getPrepareMark) => {
 		if (records) {
 			Object.forEach(records, function (key, val) {
 				key = key.toLowerCase();
-				if (String.contains(key, UNDERBAR)) {
-					let keyArr = key.split(UNDERBAR);
+				if (String.contains(key, Char.UNDER_SOURCE)) {
+					let keyArr = key.split(Char.UNDER_SOURCE);
 					let keyRslt = [keyArr[0]];
 					for (let i = 1, len = keyArr.length; i < len; i++) {
 						keyRslt.push(firstToUpperCase(keyArr[i]));
