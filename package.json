@@ -8,8 +8,8 @@
     "url": "git+https://github.com/undeadway/bluewater.git"
   },
   "dependencies": {
-    "coralian": "0.0.30",
-    "jsconst": "0.0.3",
+    "coralian": "0.0.31",
+    "jsconst": "0.0.5",
     "md5": "^2.3.0"
   },
   "devDependencies": {
