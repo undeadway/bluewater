@@ -9,9 +9,6 @@ const connection = require("./parts/connection");
 
 // connect
 function connect() {
-
-
-
 	return connection(client);
 };
 
@@ -34,7 +31,6 @@ db.type = new Proxy(type, {
 });
 
 db.getDatabaseInfo = function () {
-
 };
 
 module.exports = new Proxy(db, {

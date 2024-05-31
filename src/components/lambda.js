@@ -10,7 +10,6 @@ const { TypeMap } = require("../util/utils");
 const { errorCast } = Error;
 
 module.exports = exports = (bluewater) => {
-	
 	return (tableName) => {
 
 		let wheres = [], havings = [], exts = [], paras = {}; // 辅助条件
