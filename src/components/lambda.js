@@ -5,7 +5,7 @@
  * 支持的操作
  * =
  */
-const { Mark } = JsConst;
+const { Char } = JsConst;
 const { TypeMap } = require("../util/utils");
 const { errorCast } = Error;
 
@@ -81,7 +81,7 @@ module.exports = exports = (bluewater) => {
 			select: (columns, callback) => {
 
 				let columnsName, sql = [];
-				if (columns === Mark.ASTERISK) {
+				if (columns === Char.ASTERISK) {
 					columnsName = columns;
 				} else {
 					if (!Array.isArray(columns)) errorCast(columns, Array);
