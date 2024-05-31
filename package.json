@@ -36,7 +36,10 @@
     "adapter",
     "connection",
     "driver",
-    "javascript"
+    "javascript",
+    "sqlite3",
+    "mysql",
+    "postgres"
   ],
   "author": "hzwaygc@Gmail.com"
 }
