@@ -34,6 +34,7 @@ db.getList(); // 这个 list 方法定义在 sql.json 中
 | --- | --- | --- |
 | sqlite3 | - | https://github.com/mapbox/node-sqlite3 |
 | postgres | 9.2.24 | https://github.com/brianc/node-postgres |
+| mysql | 8.4.0 | https://github.com/sidorares/node-mysql2 |
 
 ### 预编译
 `bluewater` 所有的 sql 都是 prepare 级别的。  
