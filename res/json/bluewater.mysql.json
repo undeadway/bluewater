@@ -1,11 +1,11 @@
 {
-	"database-name": "postgres",
+	"database-name": "mysql",
 	"connection": {
 		"url": "127.0.0.1",
-		"port": "5432",
+		"port": "3306",
 		"name": "mytest",
-		"user": "postgres",
-		"passwd": "postgres"
+		"user": "mysql",
+		"passwd": "mysql"
 	},
 	"method-query":"ON",
 	"use-cache": "ON",
