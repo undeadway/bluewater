@@ -1,15 +1,21 @@
 /*
  * mysql 的数据库操作封装
- * 针对 驱动的适配器
+ * 针对 mysql2（https://github.com/sidorares/node-mysql2）驱动的适配器
  */
-
-
+const mysql = require("mysql2");
 const connection = require("./parts/connection");
 
-
 // connect
-function connect() {
-	return connection(client);
+function connect({url, user, name}) {
+
+	const conn = mysql.createConnection({
+		host      : url,
+		user      : user,
+		database  : name,
+		password  : passwd
+	});
+
+	return connection(conn);
 };
 
 const db = require("./parts/base")((paras) => {
