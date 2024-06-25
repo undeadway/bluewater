@@ -2,7 +2,6 @@
  * postgres 的数据库操作封装
  * 针对 node-postgres（https://github.com/brianc/node-postgres）驱动的适配器
  */
-
 const pg = require("pg");
 const connection = require("./parts/connection");
 
