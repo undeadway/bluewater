@@ -30,11 +30,11 @@ db.getList(); // 这个 list 方法定义在 sql.json 中
 `bluewater` 是数据库驱动的中介，本身并不包含数据库驱动。
 支持的数据库驱动如下表：
 
-| 名称 | 驱动地址 |
-| --- | --- |
-| sqlite3 | https://github.com/mapbox/node-sqlite3 |
-| postgres | https://github.com/brianc/node-postgres |
-| mysql | https://github.com/sidorares/node-mysql2 |
+| 名称| 数据库版本 | 驱动地址  | 
+| --- | --- | --- |
+| sqlite3 | 3.7.2 | https://github.com/mapbox/node-sqlite3 |
+| postgres | 9.2.24 | https://github.com/brianc/node-postgres |
+| mysql | 8.4.0 | https://github.com/sidorares/node-mysql2 |
 
 ### 预编译
 `bluewater` 所有的 sql 都是 prepare 级别的。  
