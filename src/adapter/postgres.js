@@ -28,7 +28,7 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 		statement_timeout                   : timeout.statement,
 		query_timeout                       : timeout.query,
 		application_name                    : appName,
-		idle_in_transaction_session_timeout : timeout.idleTransaction
+		idle_in_transaction_session_timeout : timeout.idleTransaction || 0
 	});
 
 	return connection(db);
