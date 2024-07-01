@@ -30,7 +30,6 @@ const keySet = new Set(["count", "size"]);
  * @param {*} timeout 过期时间
  */
 this.put = function (sql, param, records, timeout) {
-
 	if (keySet.has(sql)) {
 		throw new Error(`当前关键词已被占用，请换一个关键词。`);
 	}
@@ -52,7 +51,6 @@ this.put = function (sql, param, records, timeout) {
 }
 
 this.get = function (sql, param) {
-
 	let hash = md5(sql);
 	let key = md5(JSON.stringify(param));
 
@@ -74,7 +72,6 @@ this.get = function (sql, param) {
 }
 
 this.has = function (sql, param) {
-
 	let hash = md5(sql);
 	if (typeIs(param, "object")) {
 		param = JSON.stringify(param);
@@ -93,7 +90,6 @@ this.size = function () {
 }
 
 this.remove = function (sql, param) {
-
 	let hash = md5(sql);
 
 	if (!param) {
@@ -118,7 +114,6 @@ this.remove = function (sql, param) {
 }
 
 function isTimeout(obj) {
-
 	// timeout < 0 则认为永久缓存
 	if (obj.timeout < 0) return false;
 	// timeout 为 0

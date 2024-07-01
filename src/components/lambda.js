@@ -16,7 +16,6 @@ module.exports = exports = (bluewater) => {
 		let distincts = null, onHaving = false;
 
 		function query(sql, method, callback) {
-
 			const db = bluewater();
 
 			db.query({
@@ -79,7 +78,6 @@ module.exports = exports = (bluewater) => {
 			// 	query(sql, "drop");
 			// },
 			select: (columns, callback) => {
-
 				let columnsName, sql = [];
 				if (columns === Char.ASTERISK) {
 					columnsName = columns;
@@ -104,7 +102,6 @@ module.exports = exports = (bluewater) => {
 				query(sql.join(" "), "select", callback);
 			},
 			update: (obj, callback) => {
-
 				let sql = [];
 				sql.push(`UPDATE ${tableName} SET `);
 				let updates = [];
@@ -121,7 +118,6 @@ module.exports = exports = (bluewater) => {
 				query(sql.join(" "), "update", callback);
 			},
 			"delete": (callback) => {
-
 				let sql = [];
 				sql.push(`DELETE FROM ${tableName} `);
 				sql = concat(sql);
@@ -129,7 +125,6 @@ module.exports = exports = (bluewater) => {
 				query(sql.join(" "), "delete", callback);
 			},
 			insert: (datas, callback) => {
-
 				let sql = [];
 				sql.push(`INSERT INTO ${tableName} `);
 				let columns = [],
@@ -157,7 +152,6 @@ module.exports = exports = (bluewater) => {
 				query(sql.join(" "), "insert", callback);
 			},
 			limit: (from, cnt) => {
-
 				exts.push(`LIMIT #[limitFrom] `);
 				paras.limitFrom = from;
 
@@ -169,7 +163,6 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			offset: (count) => {
-
 				exts.push(`OFFSET #[offset] `);
 				paras.offset = count;
 
@@ -179,7 +172,6 @@ module.exports = exports = (bluewater) => {
 				onHaving = true;
 			},
 			groupBy: (column) => {
-
 				exts.push(`GROUP BY ${column} `);
 
 				return lambda;
@@ -189,13 +181,11 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			distinct: (columns) => {
-
 				distincts = new Set(columns);
 
 				return lambda;
 			},
 			equal: (column, value) => {
-
 				if (!onHaving) {
 					wheres.push(`${column} = #[${column}]`);
 				} else {
@@ -207,7 +197,6 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			notEqual: (column, value) => {
-
 				if (!onHaving) {
 					wheres.push(`${column} <> #[${column}]`);
 				} else {
@@ -219,7 +208,6 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			overThan: (column, value) => {
-
 				if (!onHaving) {
 					wheres.push(`${column} > #[${column}]`);
 				} else {
@@ -231,7 +219,6 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			lessThan: (column, value) => {
-
 				if (!onHaving) {
 					wheres.push(`${column} < #[${column}]`);
 				} else {
@@ -243,7 +230,6 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			between: (column, min, max) => {
-
 				if (!onHaving) {
 					wheres.push(`${column} BETWEEN #[${column}Min] AND #[${column}Max]`);
 				} else {
@@ -256,9 +242,7 @@ module.exports = exports = (bluewater) => {
 				return lambda;
 			},
 			like: (column, value, format) => {
-
 				format = format || `${column}%`;
-
 				value = format.replace(new RegExp(column, "g"), value);
 
 				if (!onHaving) {
