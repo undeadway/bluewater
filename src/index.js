@@ -271,7 +271,6 @@ function bluewater() {
 	// 将指定方法绑定到主对象上
 	if (methodQuery) {
 		for (let queryName in BW_SQL_DEFS) {
-
 			bwObj[queryName] = async (arg) => {
 				await runQueryFunction(queryName, arg);
 			};
