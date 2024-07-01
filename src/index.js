@@ -93,7 +93,6 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 	if (!Array.has(VALID_METHODS, _method)) sqlError(`bluewater 暂时不支持 ${_method} 。`);
 
 	let [_sql, sqlPara] = db.compire(__sql, sqlArgs);
-
 	let stmt = conn.prepare(_sql); // 实例化 stmt 并获得执行方法
 	
 	async function closeStmt() {

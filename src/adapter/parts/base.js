@@ -34,9 +34,7 @@ module.exports = (getPrepareMark) => {
 			return [sql, paras];
 		}
 
-		// while(String.contains(sql, BW_FUNCTION_START)) {
 		while (BW_FUNCTION_REGX.test(sql)) {
-
 			let regx = sql.match(BW_FUNCTION_REGX);
 			let tagName = regx[0], name = regx[1]; // TODO 因为还么想好 name 的控制是什么，所以暂时就不做内容限制
 
@@ -47,12 +45,7 @@ module.exports = (getPrepareMark) => {
 		}
 
 		let para = [];
-		// while (String.contains(sql, BW_TAG_PARAS_START)) { // 1 通过遍历 sql 来获得 所有变量名
-		while (BW_TAG_REGX.test(sql)) {
-			// let start = sql.indexOf(BW_TAG_PARAS_START) + 2,
-			// 	end = sql.indexOf(BW_TAG_END);
-			// let name = sql.slice(start, end);
-
+		while (BW_TAG_REGX.test(sql)) { // 1 通过遍历 sql 来获得 所有变量名
 			// 2 将变量装配到数组中
 			let regx = sql.match(BW_TAG_REGX);
 			let tagName = regx[0], name = regx[1];
@@ -76,13 +69,7 @@ module.exports = (getPrepareMark) => {
 			}
 		}
 
-		// while(String.contains(sql, BW_TAG_LIKE_START)) {
-		// 	let start = sql.indexOf(BW_TAG_LIKE_START) + 2,
-		// 	end = sql.indexOf(BW_TAG_END);
-		// 	let name = sql.slice(start, end);
-
 		while (BW_LIKE_REGX.test(sql)) {
-
 			let regx = sql.match(BW_LIKE_REGX);
 			let tagName = regx[0], name = regx[1];  // name 包括 % 在内的所有标签内容
 			let realName = name.replace(/%/g, ""); // 去 %
@@ -179,7 +166,6 @@ module.exports = (getPrepareMark) => {
 			}
 		},
 		getRecordsList: (rows) => {
-
 			let rs = [];
 			if (rows) {
 				if (isArray(rows)) {
