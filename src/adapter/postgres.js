@@ -12,7 +12,6 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 	max, idle, maxUses, // pool
 	connStr, types, appName // client
 	}) {
-
 	const db = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
 		user                                : user,
 		host                                : url,

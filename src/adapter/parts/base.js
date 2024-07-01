@@ -17,7 +17,6 @@ const BW_TAG_CDTION_START = "?[", BW_TAG_END = "]";
 const BW_TAG_REGX = /#\[(.+?)\]/, BW_LIKE_REGX = /!\[(.+?)\]/, BW_FUNCTION_REGX = /&\[(.+?)\]/;
 
 module.exports = (getPrepareMark) => {
-
 	/*
 	 * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
 	 * 但 #[] 这种语法数据库是不支持的，
