@@ -1,12 +1,6 @@
 /*
  * SQLite 的数据库操作封装
  * 针对 node-sqlite3（https://github.com/mapbox/node-sqlite3）驱动的适配器
- * 
- * 这个类的接口由 bluewater统一，但也可以独立于 bluewater 单独使用
- * 但如果单独使用，在 connection、statement 中所定义好的方法就好比是jdbc接口
- * 
- * 要直接用 getList，就得通过 bluewater 才能实现
- * 而不是直接调用这里的 connection 中定义好的方法来执行了
  */
 const Database = require("sqlite3").verbose().Database;
 const BEGIN_TRANSACTION = "BEGIN {level} TRANSACTION;";

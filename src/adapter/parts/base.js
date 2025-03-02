@@ -1,6 +1,12 @@
 /*
  * 各个数据库驱动适配器的基类
  * 在这个类的基础上，可以添加属于各个数据库自己独有的特性来供使用
+ * 
+ * 所有子类的接口由 bluewater 统一，但也可以独立于 bluewater 单独使用
+ * 但如果单独使用，在 connection、statement 中所定义好的方法就好比是 jdbc 接口
+ * 
+ * 要直接用如 `db.getList()`，就得通过 bluewater 才能实现
+ * 而不是直接调用这里的 connection 中定义好的方法来执行了
  */
 
 const selectCache = require("./../../util/select-cache");
@@ -19,7 +25,7 @@ const BW_TAG_REGX = /#\[(.+?)\]/, BW_LIKE_REGX = /!\[(.+?)\]/, BW_FUNCTION_REGX 
 module.exports = (getPrepareMark) => {
 	/*
 	 * bluewater 支持 SELECT * FROM TABLE WHERE ID = #[id] 这种形式的 SQL。
-	 * 但 #[] 这种语法数据库是不支持的，
+	 * 但 #[] 这种语法是 bluewater 自定义的中间语法，各数据库是不支持的，
 	 * 所以这个函数就是将上面那种形式的SQL 编译为数据库所支持的形式
 	 * 
 	 * @param sql 待修改的 SQL
