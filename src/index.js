@@ -83,7 +83,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 			condition: condition
 		};
 		
-	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql，而不管其是否真的是一条 sql
+	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql，而不管其是否真的是一条 sql （即不判断语法合规性）
 		__sql = queryName;
 		queryName = `${typeName} ${method}`;
 		sqlArgs = paras;
