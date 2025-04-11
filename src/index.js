@@ -133,7 +133,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 			db.putCache(_sql, sqlPara, result, _timeout);
 		}
 
-		return result;
+		return conn.tidyUp(result);
 	} catch (e) {
 		Coralian.logger.err(e);
 		throw e;

@@ -1,7 +1,7 @@
 const funcsMap = require("./../../res/json/funcs_map.json");
 
 function getFunctionName(name) { 
-    return funcsMap[name];
+	return funcsMap[name];
 }
 
 function sqlError(msg) {
@@ -14,32 +14,32 @@ function sqlError(msg) {
  * 3. 下划线、中划线
  */
 function chkTagName (name) {
-    if (!/^([0-9a-zA-Z_\-]+)$/.test(name)) {
-        sqlError(`无法解析 ${name}`);
-    }
+	if (!/^([0-9a-zA-Z_\-]+)$/.test(name)) {
+		sqlError(`无法解析 ${name}`);
+	}
 }
 
 TypeMap = {
-    check: () => {
+	check: () => {
 
-    },
-    format: (input, type) => {
-        // TODO 暂时先把所有字符串加上引号，其他类型之后再处理
-        switch (type) {
-            case "nchar":
-            case "varchar":
-            case "nvarchar":
-            case "char":
-                return `'${input}'`;
-            default :
-        }
-        return input;
-    }
+	},
+	format: (input, type) => {
+		// TODO 暂时先把所有字符串加上引号，其他类型之后再处理
+		switch (type) {
+			case "nchar":
+			case "varchar":
+			case "nvarchar":
+			case "char":
+				return `'${input}'`;
+			default :
+		}
+		return input;
+	}
 };
 
 module.exports = {
-    getFunctionName,
-    chkTagName,
-    sqlError,
-    TypeMap
+	getFunctionName,
+	chkTagName,
+	sqlError,
+	TypeMap
 };

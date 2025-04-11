@@ -31,7 +31,13 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 		idle_in_transaction_session_timeout : timeout.idleTransaction || 0
 	});
 
-	return connection(db);
+	const conn = connection(db);
+
+	conn.tidyUp = (obj) => {
+		return obj[0].rows;
+	};
+
+	return conn;
 };
 
 const db = require("./parts/base")((paras) => {

@@ -29,6 +29,9 @@ function connect({ url }) {
 
 	return {
 		close: close,
+		tidyUp (obj) {
+			return obj;
+		},
 		begin: () => {
 			return new Promise((resolve, reject) => {
 				conn.run(getTransaction(), (err, rows) => {
