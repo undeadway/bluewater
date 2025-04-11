@@ -13,21 +13,21 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 	connStr, types, appName // client
 	}) {
 	const db = new pg[type]({ // 这里修改为配置的原因是 pg 库支持 client, pool, result 等不同形式
-		user                                : user,
-		host                                : url,
-		database                            : name,
-		password                            : passwd,
-		port                                : port,
-        ssl                                 : ssl,
-        connectionTimeoutMillis             : timeout.connection,
-        max                                 : max,
-        idleTimeoutMillis                   : idle,
-        maxUses                             : maxUses,
-        connectionString                    : connStr,
-        types                               : types,
-		statement_timeout                   : timeout.statement,
-		query_timeout                       : timeout.query,
-		application_name                    : appName,
+		user																: user,
+		host																: url,
+		database														: name,
+		password														: passwd,
+		port																: port,
+		ssl								 									: ssl,
+		connectionTimeoutMillis			 				: timeout.connection,
+		max								 									: max,
+		idleTimeoutMillis				   					: idle,
+		maxUses							 								: maxUses,
+		connectionString										: connStr,
+		types							   								: types,
+		statement_timeout				   					: timeout.statement,
+		query_timeout					   						: timeout.query,
+		application_name										: appName,
 		idle_in_transaction_session_timeout : timeout.idleTransaction || 0
 	});
 
@@ -49,7 +49,7 @@ db.getDBSize = function () {
 };
 
 const type = {
-    Client, Pool, Result
+	Client, Pool, Result
 };
 
 db.type = new Proxy(type, {

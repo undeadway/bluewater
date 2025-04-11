@@ -153,9 +153,9 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
  * 例：
  * let db = bluewater();
  * db.getList({
- *     success : [Function],
- *     fail : [Function],
- *     paras : {}
+ * 	success : [Function],
+ * 	fail : [Function],
+ * 	paras : {}
  * });
  * 
  * success : 数据库执行成功后的回调函数（后处理）

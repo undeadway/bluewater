@@ -9,10 +9,10 @@ const connection = require("./parts/connection");
 function connect({url, user, name}) {
 
 	const conn = mysql.createConnection({
-		host      : url,
-		user      : user,
-		database  : name,
-		password  : passwd
+		host			: url,
+		user			: user,
+		database	: name,
+		password	: passwd
 	});
 
 	return connection(conn);
@@ -27,7 +27,7 @@ db.getDBSize = function () {
 };
 
 const type = {
-    Client, Pool, Result
+	Client, Pool, Result
 };
 
 db.type = new Proxy(type, {

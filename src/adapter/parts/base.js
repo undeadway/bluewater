@@ -151,8 +151,8 @@ module.exports = (getPrepareMark) => {
 								 * INSER INTO TABLE(PK_COLUMN ?[hasColumn(name)]) VALUES(123 ?[hasColumn(value)])
 								 * 这样在 sql 的 condition 配置中只要写
 								 * "hasColumn" ： {
-								 *     "name"  : ", COLUMN_NAME",
-								 *     "value" : ", #[column]"
+								 * 	"name"  : ", COLUMN_NAME",
+								 * 	"value" : ", #[column]"
 								 * }
 								 * 就可以，而不用分别写 hasColumnName 和 hasColumnValue 两个配置了
 								 * 而前端程序的 condition 中也同样只要实现一个 hasColumn 就可以了，更符合逻辑一些
