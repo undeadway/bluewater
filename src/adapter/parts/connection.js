@@ -8,7 +8,12 @@ function connection(conn) {
 		isConnected = true;
 	}
 
-    return {
+  return {
+		// tidyUp 这个函数是一个默认的函数
+		// 如果有特殊的需求，数据库独自处理
+		tidyUp: (obj) => {
+			return obj;
+		},
 		begin: async () => {
 			connect();
 			await conn.query("BEGIN");
