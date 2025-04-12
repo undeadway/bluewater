@@ -147,20 +147,20 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
  * 
  * 通过 let db = bluewater(); 来创建 connetion 的实例
  * 外部调用不用知道内部逻辑，也不用连接 statement(默认都是 prepare 级的)
- * 具体的如何实现prepare 则交给各个数据库的驱动自己来实现
+ * 具体的如何实现 prepare 则交给各个数据库的驱动自己来实现
  * 在 connetcion 创建之后，只要通过 其实例调用在 sql.json 中定义好的方法就可以了。
  * 
  * 例：
  * let db = bluewater();
  * db.getList({
+ * 	condition : {},
  * 	success : [Function],
- * 	fail : [Function],
- * 	paras : {}
+ * 	fail : [Function]
  * });
  * 
  * success : 数据库执行成功后的回调函数（后处理）
  * fail : 数据库执行失败情况下的处理，如果不提供，bluewater 会有一个默认函数来执行，但默认函数只会将错误记录，而不会去解决错误
- * paras : 执行 该sql 所需要的参数
+ * condition : 执行 该 sql 所需要的参数
  */
 function bluewater() {
 
