@@ -42,10 +42,18 @@ const [getBwSqlDefs, db, BW_DB_CONFIGS, useCache, DEFAULT_DB_NAME, methodQuery] 
 	const database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
 	const useCache = database["use-cache"] === STR_ON,
 		dbConnConfigs = database.connections,
-		defaultDbName = dbConnConfigs.default,
+		// defaultDbName = dbConnConfigs.default,
 		methodQuery = database["method-query"] === STR_ON;
 
+	let defaultDbName = dbConnConfigs.default;
 	delete dbConnConfigs.default;
+	if (!defaultDbName) {
+		let dbNames = Object.keys(dbConnConfigs);
+		if (!dbNames || dbNames.length === 0) {
+			throw new Error("请至少配置一个数据库！");
+		}
+		defaultDbName = dbNames[0];
+	}
 	// 每个 bluewater 都只有一份 archive 的单例，所以这里不需要进行导出或者其他处理
 	// init 之后程序进行自动化的归档处理，如果配置中没有配置 archive 则后续也不会进行自动哦归档处理
 	archive.init(database.archive);
