@@ -17,34 +17,42 @@
  * 类似 mybatis 的分 xml 文件 或者分 类来加载 sql
  */
 const archive = require("./util/archive"); // 这里主要考虑归档处理可能被中途启动
+const JsLog = require('jslog');
 const STR_SELECT = "select", STR_ARRAY = "array";
 
+const jslog = new JsLog();
+
 // 这个函数预读入数据库的配置信息
-const [BW_SQL_DEFS, db, dbConnConfig, useCache, dbName, methodQuery] = (() => {
+const [getBwSqlDefs, db, BW_DB_CONFIGS, useCache, DEFAULT_DB_NAME, methodQuery] = (() => {
 
 	const { readFileSync, existsSync } = require("fs");
 	const STR_ON = "ON";
 
-	const def = existsSync(process.cwd() + "/res/json/sql.json") ?
+	function getDef (dbName) {
+		const def = existsSync(process.cwd() + `/res/json/sql-${dbName}.json`) ?
 				// 这里是读入 bluewater 的所有 sql 配置，或者配置为空
-				JSON.parse(readFileSync(process.cwd() + "/res/json/sql.json"), "utf-8")
+				JSON.parse(readFileSync(process.cwd() + `/res/json/sql-${dbName}.json`), "utf-8")
 				: {};
+
+		return def;
+	}
 
 	// 这里是数据库的配置，包括数据库类型、数据库连接、用户名密码等
 	// 但 bluewater 不负责实现对这些内容的解析，数据库该怎么连，交给每种数据库独立完成
 	const database = JSON.parse(readFileSync(process.cwd() + "/res/json/bluewater.json"), "utf-8");
 	const useCache = database["use-cache"] === STR_ON,
-		dbConnConfig = database.connection,
-		dbName = database["database-name"],
+		dbConnConfigs = database.connections,
+		defaultDbName = dbConnConfigs.default,
 		methodQuery = database["method-query"] === STR_ON;
 
+	delete dbConnConfigs.default;
 	// 每个 bluewater 都只有一份 archive 的单例，所以这里不需要进行导出或者其他处理
 	// init 之后程序进行自动化的归档处理，如果配置中没有配置 archive 则后续也不会进行自动哦归档处理
 	archive.init(database.archive);
 
 	// 数据库驱动入口
-	return [def, require(`./adapter/${dbName}`),
-			dbConnConfig, useCache, dbName, methodQuery];
+	return [getDef, (dbName) => require(`./adapter/${dbName}`),
+			dbConnConfigs, useCache, defaultDbName, methodQuery];
 })();
 
 // 数据库中间驱动可以使用的数据方法，即实现 bluewater 接口所需要实现的方法
@@ -59,12 +67,13 @@ function sqlError(msg) {
 	throw new Error(msg || "SQL 错误");
 }
 
-async function queryFunction({queryName, paras, method, typeName }, conn) {
+async function queryFunction({ queryName, paras, method, typeName }, conn, dbName) {
 
 	let __sql, sqlArgs, _method, _timeout = 0;
-	
-	if (BW_SQL_DEFS[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
-		let { method, sql, timeout, condition } = BW_SQL_DEFS[queryName];
+	const BW_SQL_DEF = getBwSqlDefs(dbName);
+
+	if (BW_SQL_DEF[queryName]) { // 如果 queryName 被定义，则走定义好的 sql
+		let { method, sql, timeout, condition } = BW_SQL_DEF[queryName];
 
 		if (!method) { // 检查各种定义
 			sqlError(`sql.json 中 ${queryName} 没有定义 method`);
@@ -83,7 +92,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 			condition: condition
 		};
 		
-	} else { // 如果 BW_SQL_DEFS 中没有定义，则认为 传入 的 queryName 是条 sql，而不管其是否真的是一条 sql （即不判断语法合规性）
+	} else {// 如果 BW_SQL_DEF 中没有定义，则认为 传入 的 queryName 是条 sql，而不管其是否真的是一条 sql （即不判断语法合规性）
 		__sql = queryName;
 		queryName = `${typeName} ${method}`;
 		sqlArgs = paras;
@@ -108,7 +117,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 			// 当处理类型为 select 且判断使用 cache 的时候，先从缓存中查找是否有已有已被缓存的对象
 			let result = db.getCache(_sql, sqlPara);
 			if (result !== null) {
-				Coralian.logger.log(`${queryName} data get from cache.`);
+				jslog.log(`${queryName} data get from cache.`);
 				return result;
 			}
 		} else {
@@ -120,9 +129,9 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 		if (!stmtMethod) sqlError(`${dbName} 暂时不支持所定义的 ${_method} 操作： `);
 
 		// 执行数据库
-		Coralian.logger.log(`${queryName} start # ${_method}`);
-		Coralian.logger.log(_sql);
-		Coralian.logger.log("args : " + JSON.stringify(sqlPara));
+		jslog.log(`${queryName} start # ${_method}`);
+		jslog.log(_sql);
+		jslog.log("args : " + JSON.stringify(sqlPara));
 
 		let result = await stmtMethod(sqlPara);
 		if (_method === STR_SELECT) {
@@ -135,7 +144,7 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
 
 		return conn.tidyUp(result);
 	} catch (e) {
-		Coralian.logger.err(e);
+		jslog.error(e);
 		throw e;
 	} finally {
 		await closeStmt();
@@ -162,9 +171,9 @@ async function queryFunction({queryName, paras, method, typeName }, conn) {
  * fail : 数据库执行失败情况下的处理，如果不提供，bluewater 会有一个默认函数来执行，但默认函数只会将错误记录，而不会去解决错误
  * condition : 执行 该 sql 所需要的参数
  */
-function bluewater() {
+function bluewater(usingDbName = DEFAULT_DB_NAME) {
 
-	let conn = db.connect(dbConnConfig);
+	const conn = db(usingDbName).connect(BW_DB_CONFIGS[usingDbName]);
 
 	async function closeConn() {
 		if (conn) {
@@ -177,10 +186,10 @@ function bluewater() {
 		try {
 			let result = await queryFunction( 
 				{ queryName, paras: arg.condition, method: arg.method, typeName: arg.typeName }, 
-				conn);
+				conn, dbName);
 			if (arg.success) arg.success(result);
 		} catch (e) {
-			Coralian.logger.err(e);
+			jslog.error(e);
 			if (arg.failed) {
 				arg.failed();
 			}
@@ -201,7 +210,7 @@ function bluewater() {
 				let results = {};
 				let item = null;
 				while ((item = queue.shift()) !== undefined) {
-					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
+					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn, dbName);
 					if (item.success) {
 						item.success(result);
 					} else { // 在没有对每个处理都定义 success 的时候，将所有返回值都放到最后统一处理
@@ -222,7 +231,7 @@ function bluewater() {
 				await conn.commit();
 				if (success) success(results);
 			} catch (e) {
-				Coralian.logger.err(e);
+				jslog.error(e);
 				await conn.rollback();
 				e.code = 500;
 				if (failed) failed(e);
@@ -236,7 +245,7 @@ function bluewater() {
 				let results = {};
 				let item = null;
 				while ((item = queue.shift()) !== undefined) {
-					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn);
+					let result = await queryFunction({ queryName: item.name, paras: item.condition }, conn, dbName);
 					let alias = item.alias || item.name;
 					let ret = results[alias];
 					if (item.success) {
@@ -258,7 +267,7 @@ function bluewater() {
 				if (success) success(results);
 			} catch (e) {
 				// 因为没有开启事务，所以不用进行回滚
-				Coralian.logger.err(e);
+				jslog.error(e);
 				e.code = 500;
 				if (failed) failed(e);
 			} finally {
@@ -269,7 +278,7 @@ function bluewater() {
 
 	// 将指定方法绑定到主对象上
 	if (methodQuery) {
-		for (let queryName in BW_SQL_DEFS) {
+		for (let queryName in BW_SQL_DEF) {
 			bwObj[queryName] = async (arg) => {
 				await runQueryFunction(queryName, arg);
 			};
