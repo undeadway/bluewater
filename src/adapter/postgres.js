@@ -3,7 +3,7 @@
  * 针对 node-postgres（https://github.com/brianc/node-postgres）驱动的适配器
  */
 const pg = require("pg");
-const connection = require("./parts/connection");
+const connection = require("./base/connection");
 
 const Client = "Client", Pool = "Pool", Result = "Result";
 
@@ -40,7 +40,7 @@ function connect({ type = Client, url, name, user, passwd, port, ssl, timeout = 
 	return conn;
 };
 
-const db = require("./parts/base")((paras) => {
+const db = require("./base")((paras) => {
 	return `$${paras.length}`;
 });
 db.connect = connect;
