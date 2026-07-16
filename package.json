@@ -18,8 +18,8 @@
     "sqlite3": "5.0.0"
   },
   "scripts": {
-    "build": " test/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test/index.js",
+    "lint": "echo \"No linter configured yet\" && exit 0"
   },
   "description": "A Node.js based database interface adapter, an database-agnostic interface library, designed to bridge the usage discrepancies caused by diverse database driver syntaxes.",
   "bugs": {

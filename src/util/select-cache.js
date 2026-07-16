@@ -20,119 +20,110 @@
  */
 const md5 = require("md5");
 
-let map = new Map(); // 这里要重置，所以不能用 const
-const keySet = new Set(["count", "size"]);
-/**
- * 
- * @param {*} hash hash
- * @param {*} param 请求条件
- * @param {*} records 返回值
- * @param {*} timeout 过期时间
- */
-this.put = function (sql, param, records, timeout) {
-	if (keySet.has(sql)) {
-		throw new Error(`当前关键词已被占用，请换一个关键词。`);
+const KEY_SET = new Set(["count", "size"]);
+
+class SelectCache {
+
+	constructor() {
+		this.map = new Map();
 	}
 
-	let hash = md5(sql);
-	let key = md5(JSON.stringify(param));
+	/**
+	 * @param {string} sql SQL 语句
+	 * @param {*} param 请求条件
+	 * @param {*} records 返回值
+	 * @param {number} timeout 过期时间（秒）
+	 */
+	put(sql, param, records, timeout) {
+		if (KEY_SET.has(sql)) {
+			throw new Error(`当前关键词已被占用，请换一个关键词。`);
+		}
 
-	let obj = map.get(hash);
-	if (!obj) {
-		obj = {
-			sie: 0, count: 0
-		};
-		map.set(hash, obj);
+		const hash = md5(sql);
+		const key = md5(JSON.stringify(param));
+
+		let obj = this.map.get(hash);
+		if (!obj) {
+			obj = { size: 0, count: 0 };
+			this.map.set(hash, obj);
+		}
+
+		obj[key] = { value: records, count: records.length, timeout: timeout * 1000, created: Date.now() };
+		obj.count += records.length;
+		obj.size++;
 	}
 
-	obj[key] = { value: records, count: records.length, timeout: timeout * 1000, created: Date.now() };
-	obj.count += records.length;
-	obj.size++;
-}
+	get(sql, param) {
+		const hash = md5(sql);
+		const key = md5(JSON.stringify(param));
 
-this.get = function (sql, param) {
-	let hash = md5(sql);
-	let key = md5(JSON.stringify(param));
-
-	let obj = map.get(hash);
-	if (!obj) return null;
-
-	let records = obj[key];
-	if (isTimeout(records)) return null;
-
-	var value = records.value;
-
-	if (!!value) {
-		obj.count++;
-		records.count++;
-		return value;
-	} else {
-		return null;
-	}
-}
-
-this.has = function (sql, param) {
-	let hash = md5(sql);
-	if (typeIs(param, "object")) {
-		param = JSON.stringify(param);
-	}
-	let records = map.get(hash, param);
-
-	return records !== null;
-}
-
-this.clear = function () {
-	map.clear();
-	map = new Map();
-}
-this.size = function () {
-	return map.size;
-}
-
-this.remove = function (sql, param) {
-	let hash = md5(sql);
-
-	if (!param) {
-		return map.remove(hash);
-	} else {
-		let key = md5(JSON.stringify(param));
-
-		let obj = map.get(hash);
+		const obj = this.map.get(hash);
 		if (!obj) return null;
 
-		let result = obj[key];
+		const records = obj[key];
+		if (this._isTimeout(records)) return null;
+
+		if (records && records.value) {
+			obj.count++;
+			records.count++;
+			return records.value;
+		}
+		return null;
+	}
+
+	has(sql, param) {
+		const hash = md5(sql);
+		if (typeof param === "object" && param !== null && !Array.isArray(param)) {
+			param = JSON.stringify(param);
+		}
+		const obj = this.map.get(hash);
+		if (!obj) return false;
+
+		const key = typeof param === "object" ? md5(JSON.stringify(param)) : param;
+		return obj[key] !== undefined;
+	}
+
+	clear() {
+		this.map.clear();
+		this.map = new Map();
+	}
+
+	size() {
+		return this.map.size;
+	}
+
+	remove(sql, param) {
+		const hash = md5(sql);
+
+		if (param === undefined || param === null) {
+			const result = this.map.get(hash);
+			this.map.delete(hash);
+			return result || null;
+		}
+
+		const key = md5(JSON.stringify(param));
+		const obj = this.map.get(hash);
+		if (!obj) return null;
+
+		const result = obj[key];
 		delete obj[key];
 		obj.size--;
-		obj.count -= result.count;
-
 		if (result) {
+			obj.count -= result.count;
 			return result.value;
-		} else {
-			return null;
 		}
+		return null;
+	}
+
+	_isTimeout(obj) {
+		if (!obj) return true;
+		// timeout < 0 则认为永久缓存
+		if (obj.timeout < 0) return false;
+		// timeout 为 0 则立即过期
+		if (obj.timeout === 0) return true;
+		// 创建到现在已经超过 timeout 的保质期
+		return (obj.timeout + obj.created) <= Date.now();
 	}
 }
 
-function isTimeout(obj) {
-	// timeout < 0 则认为永久缓存
-	if (obj.timeout < 0) return false;
-	// timeout 为 0
-	if (obj.timeout == 0) return true;
-	// 创建到现在已经超过timeoue 的保质期
-	return (obj.timeout + obj.created) <= Date.now();
-}
-
-/**
- * 归档函数自身不实现什么时候进行归档处理
- * 只对哪些缓存进行归档进行处理
- * 
- * 最热的缓存放在内存中
- * 中等的放在文件
- * 最冷的不做缓存
- * 每次归档的间隔判断交给程序配置
- */
-this.archive = () => {
-
-	
-
-};
+module.exports = SelectCache;

@@ -3,10 +3,12 @@
  * 针对 mysql2（https://github.com/sidorares/node-mysql2）驱动的适配器
  */
 const mysql = require("mysql2");
-const connection = require("./parts/connection");
+const connection = require("./base/connection");
+
+const Client = "Client", Pool = "Pool", Result = "Result";
 
 // connect
-function connect({url, user, name}) {
+function connect({url, user, name, passwd}) {
 
 	const conn = mysql.createConnection({
 		host			: url,
@@ -18,7 +20,7 @@ function connect({url, user, name}) {
 	return connection(conn);
 };
 
-const db = require("./parts/base")((paras) => {
+const db = require("./base")((paras) => {
 	return `$${paras.length}`;
 });
 db.connect = connect;
@@ -35,9 +37,6 @@ db.type = new Proxy(type, {
 		return target[prop];
 	}
 });
-
-db.getDatabaseInfo = function () {
-};
 
 module.exports = new Proxy(db, {
 	get: (target, prop) => {

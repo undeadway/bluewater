@@ -3,5 +3,21 @@ db
 .vscode
 yarn.lock
 package-lock.json
-yarn.lock
 res/json/bluewater.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage/
+
+# Runtime / temp
+*.db
+*.sqlite
+dist/
+tmp/

@@ -42,6 +42,8 @@ bluewater/
 
 最终把审查结果输出到 `@worksapce/prompt/审查结果/` 目录下，命名为 `代码结构审查-YYYYMMDDHHmmss.md` ，YYYYMMDDHHmmss 是日期格式。
 
+> ⚠️ 时间必须通过 `date` 命令获取当前实际时间，禁止使用占位符或凭感觉填写。
+
 ## 审查检查清单
 
 执行审查时，请逐项检查以下内容：

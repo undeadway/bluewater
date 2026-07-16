@@ -58,10 +58,6 @@ db.type = new Proxy(type, {
 	}
 });
 
-db.getDatabaseInfo = function () {
-
-};
-
 module.exports = new Proxy(db, {
 	get: (target, prop) => {
 		return target[prop];

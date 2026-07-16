@@ -1,11 +1,51 @@
 const funcsMap = require("./../../res/json/funcs_map.json");
 
+/**
+ * Bluewater 错误基类
+ */
+class BwError extends Error {
+	constructor(msg) {
+		super(msg);
+		this.name = "BwError";
+	}
+}
+
+/**
+ * SQL 语法/定义错误
+ */
+class BwSqlError extends BwError {
+	constructor(msg) {
+		super(msg);
+		this.name = "BwSqlError";
+	}
+}
+
+/**
+ * 参数错误
+ */
+class BwParamError extends BwError {
+	constructor(msg) {
+		super(msg);
+		this.name = "BwParamError";
+	}
+}
+
+/**
+ * 数据库连接错误
+ */
+class BwConnectionError extends BwError {
+	constructor(msg) {
+		super(msg);
+		this.name = "BwConnectionError";
+	}
+}
+
 function getFunctionName(name) { 
 	return funcsMap[name];
 }
 
 function sqlError(msg) {
-	throw new Error(msg);
+	throw new BwSqlError(msg);
 }
 
 /**
@@ -20,9 +60,6 @@ function chkTagName (name) {
 }
 
 TypeMap = {
-	check: () => {
-
-	},
 	format: (input, type) => {
 		// TODO 暂时先把所有字符串加上引号，其他类型之后再处理
 		switch (type) {
@@ -41,5 +78,9 @@ module.exports = {
 	getFunctionName,
 	chkTagName,
 	sqlError,
-	TypeMap
+	TypeMap,
+	BwError,
+	BwSqlError,
+	BwParamError,
+	BwConnectionError
 };
