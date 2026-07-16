@@ -284,6 +284,6 @@ function bluewater() {
 bluewater.getDatabaseInfo = db.getDatabaseInfo;
 bluewater.getDBSize = db.getDBSize;
 
-bluewater.lambda = require("./components/lambda")(bluewater);
+bluewater.lambda = require("./query-builder/lambda")(bluewater);
 
 module.exports = bluewater;
